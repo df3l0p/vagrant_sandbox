@@ -1,0 +1,23 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+
+  # This allows you to define os specific variables
+  # Facts can be collected using the following command
+  # ansible -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory all -m setup -a 'gather_subset=!all' 
+  - name: gather os specific variables
+    include_vars: "{{ item }}" 
+    with_first_found:
+    - "vars/{{ ansible_distribution_release | lower }}.yml"
+    - "vars/{{ ansible_distribution | lower }}.yml"
+    tags: vars
+
+  - name: 'Install base packages'
+    apt:
+      pkg: 
+        '{{ packages }}'
+      state: latest
+      update_cache: yes
+    tags: package
