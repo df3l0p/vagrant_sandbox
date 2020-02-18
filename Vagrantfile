@@ -5,6 +5,7 @@ targets = {
         "box"           => "kalilinux/rolling-light",
         "version"       => "2019.4.0",
         "ip"            => "",
+        "reqAudio"      => true,
         "playbooks"     => [
             "res/ansible/main.yml"
         ]
@@ -21,13 +22,22 @@ Vagrant.configure("2") do |config|
             build.vm.box = box
             build.vm.provider :virtualbox do |vb, override|
                 vb.name = name
+                # Setups audio
+                if target["reqAudio"]
+                    vb.customize [
+                        "modifyvm", :id, 
+                        "--audio", "pulse",
+                        "--audiocontroller", "ac97",
+                        "--audioout", "on"
+                    ]
+                end
             end
             # Test if version is provided
-            if target.key?(:version) and not target["version"]
+            if target.key?(:version) and not target["version"].empty?
                 build.vm.box_version = target["version"]
             end
             # Test if ip is provided
-            if target.key?(:ip) and not target["ip"]
+            if target.key?(:ip) and not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
             
