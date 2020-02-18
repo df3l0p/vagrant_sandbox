@@ -2,6 +2,8 @@
 - hosts: all
   gather_facts: yes
   become: yes
+  roles:
+  - ansible-role-virtualbox-guest
   tasks:
 
   # This allows you to define os specific variables
