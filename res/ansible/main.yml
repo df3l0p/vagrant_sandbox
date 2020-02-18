@@ -2,19 +2,27 @@
 - hosts: all
   gather_facts: yes
   become: yes
-  roles:
-  - ansible-role-virtualbox-guest
   tasks:
 
   # This allows you to define os specific variables
   # Facts can be collected using the following command
   # ansible -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory all -m setup -a 'gather_subset=!all' 
-  - name: gather os specific variables
+  - name: 'gather os specific variables'
     include_vars: "{{ item }}" 
     with_first_found:
     - "vars/{{ ansible_distribution_release | lower }}.yml"
     - "vars/{{ ansible_distribution | lower }}.yml"
     tags: vars
+
+  - name: 'Update all packages'
+    apt:
+      state: latest
+    tags: update
+
+  - name: 'Import role ansible-role-virtualbox-guest'
+    import_role:
+      name: ansible-role-virtualbox-guest
+    tags: install
 
   - name: 'Install base packages'
     apt:
@@ -22,4 +30,4 @@
         '{{ packages }}'
       state: latest
       update_cache: yes
-    tags: package
+    tags: install
