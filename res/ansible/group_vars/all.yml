@@ -1,0 +1,14 @@
+---
+###
+# Virtualbox role
+###
+# defaults file for virtualbox-guest
+virtualbox_iso: /root/VBoxGuestAdditions.iso
+virtualbox_os_packages:
+  - virtualbox-guest-additions-iso
+  - virtualbox-guest-dkms
+  - virtualbox-guest-source
+  - virtualbox-guest-utils
+  - virtualbox-guest-x11
+virtualbox_remove_os_packages: false
+virtualbox_version: auto
