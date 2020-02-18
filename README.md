@@ -1,7 +1,7 @@
 # Vagrant penetest
 
 This repository hosts the vagrantfile and relevant resoures 
-to bootrap a pentest virtual machine
+to bootstrap a pentest virtual machine
 
 # Submodules
 
