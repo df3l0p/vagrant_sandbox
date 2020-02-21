@@ -2,8 +2,8 @@
 # playbook can be an empty array
 targets = {
     "pentest" => {
-        "box"           => "kalilinux/rolling-light",
-        "version"       => "2019.4.0",
+        "box"           => "kalilinux/rolling",
+        "version"       => "",
         "ip"            => "",
         "reqAudio"      => true,
         "playbooks"     => [
@@ -12,6 +12,32 @@ targets = {
     }
 }
 
+# Module used to identify host OS 
+module OS
+    def OS.windows?
+        (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def OS.mac?
+        (/darwin/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def OS.unix?
+        !OS.windows?
+    end
+
+    def OS.linux?
+        OS.unix? and not OS.mac?
+    end
+end
+
+# handling specifig hosts variables
+audio_driver = ''
+if OS.linux?
+    audio_driver = 'pulse'
+elsif OS.mac?
+    audio_driver = 'coreaudio'
+end
 
 Vagrant.configure("2") do |config|
     # Loop trough each target
@@ -26,7 +52,7 @@ Vagrant.configure("2") do |config|
                 if target["reqAudio"]
                     vb.customize [
                         "modifyvm", :id, 
-                        "--audio", "pulse",
+                        "--audio", audio_driver,
                         "--audiocontroller", "ac97",
                         "--audioout", "on"
                     ]
