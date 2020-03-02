@@ -11,7 +11,7 @@
     include_vars: "{{ item }}" 
     with_first_found:
     - "vars/{{ ansible_distribution_release | lower }}.yml"
-    - "vars/{{ ansible_distribution | lower }}.yml"
+    - "vars/{{ ansible_distribution_version | lower }}.yml"
     tags: vars
 
   - name: 'Update all packages'
