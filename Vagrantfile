@@ -3,7 +3,7 @@
 targets = {
     "pentest" => {
         "box"           => "kalilinux/rolling",
-        "version"       => "",
+        "version"       => "2020.1.0",
         "ip"            => "",
         "reqAudio"      => true,
         "playbooks"     => [
@@ -59,11 +59,11 @@ Vagrant.configure("2") do |config|
                 end
             end
             # Test if version is provided
-            if target.key?(:version) and not target["version"].empty?
+            if not target["version"].empty?
                 build.vm.box_version = target["version"]
             end
             # Test if ip is provided
-            if target.key?(:ip) and not target["ip"].empty?
+            if not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
             
