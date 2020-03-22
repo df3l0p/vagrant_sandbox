@@ -33,12 +33,14 @@ end
 
 # handling specifig hosts variables
 audio_driver = ''
+ansible_supplier = 'ansible'
 if OS.linux?
     audio_driver = 'pulse'
 elsif OS.mac?
     audio_driver = 'coreaudio'
 elsif OS.windows?
     audio_driver = 'dsound'
+    ansible_supplier = 'ansible_local'
 end
 
 Vagrant.configure("2") do |config|
@@ -68,7 +70,7 @@ Vagrant.configure("2") do |config|
             if not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
-            
+
             # Runs the playbooks for a given target 
             # Vagrant generates host file under .vagrant/provisioners/ansible/
             # Further information available at :
@@ -77,7 +79,7 @@ Vagrant.configure("2") do |config|
             # export ANSIBLE_HOST_KEY_CHECKING=False
             # ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory res/ansible/pb-dummy.yml
             target["playbooks"].each do |playbook|
-                build.vm.provision :ansible do |ansible|
+                build.vm.provision ansible_supplier do |ansible|
                     ansible.playbook = playbook
                 end
             end
