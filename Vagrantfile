@@ -37,6 +37,8 @@ if OS.linux?
     audio_driver = 'pulse'
 elsif OS.mac?
     audio_driver = 'coreaudio'
+elsif OS.windows?
+    audio_driver = 'dsound'
 end
 
 Vagrant.configure("2") do |config|
