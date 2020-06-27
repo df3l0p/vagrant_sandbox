@@ -22,3 +22,5 @@ Deploy vagrant pentest
 ```bash
 vagrant up
 ```
+
+To login: vagrant / vagrant
