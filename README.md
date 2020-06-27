@@ -1,22 +1,24 @@
-# Vagrant penetest
+# Vagrant pentest
 
 This repository hosts the vagrantfile and relevant resoures 
 to bootstrap a pentest virtual machine
 
-# Submodules
+# Requirements
 
-To keep track of other projects, git submodules have been used.  
-When cloning the project, you have two options to retrieve the submodules
-* Option 1
+* vagrant
+* ansible
+* virtualbox
+* (optional) virtualbox extension
 
-    ```bash
-    git clone git@github.com:df3l0p/vagrant_pentest.git --recurse
-    ```
+# Getting started
 
-* Option 2
+Fetch submodules
+```bash
+git submodule init
+git submodule update --recursive
+```
 
-    ```bash
-    git clone git@github.com:df3l0p/vagrant_pentest.git
-    git submodule init
-    git submodule update
-    ```
+Deploy vagrant pentest
+```bash
+vagrant up
+```
