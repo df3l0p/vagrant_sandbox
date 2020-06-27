@@ -20,8 +20,11 @@
     tags: update
 
   - name: 'Import role ansible-role-virtualbox-guest'
-    import_role:
+    include_role:
       name: ansible-role-virtualbox-guest
+      apply:
+        tags:
+          - guest
     tags: install
 
   - name: 'Install base packages'
