@@ -7,30 +7,48 @@
   # This allows you to define os specific variables
   # Facts can be collected using the following command
   # ansible -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory all -m setup -a 'gather_subset=!all' 
-  - name: 'gather os specific variables'
+  - name: Gather os specific variables
     include_vars: "{{ item }}" 
     with_first_found:
     - "vars/{{ ansible_distribution_release | lower }}.yml"
     - "vars/{{ ansible_distribution_version | lower }}.yml"
-    tags: vars
+    tags: 
+      - set-vars
 
-  - name: 'Update all packages'
+  - name: Update all packages to the latest version
     apt:
-      state: latest
-    tags: update
+      upgrade: dist
+      update_cache: yes
+    tags:
+      - install-update
 
-  - name: 'Import role ansible-role-virtualbox-guest'
+  - name: Install base packages
+    apt:
+      pkg: 
+        "{{ packages }}"
+      state: latest
+      update_cache: yes
+    tags: 
+      - install-base-packages
+    
+  - name: Reboot a machine that might have lots of updates to apply
+    reboot:
+      reboot_timeout: 120
+    tags: 
+      - install-update
+      - install-base-packages
+
+  - name: Import role ansible-role-virtualbox-guest
     include_role:
       name: ansible-role-virtualbox-guest
       apply:
         tags:
-          - guest
-    tags: install
+          - install-guest-additions
+    tags: 
+      - install-guest-additions
 
-  - name: 'Install base packages'
-    apt:
-      pkg: 
-        '{{ packages }}'
-      state: latest
-      update_cache: yes
-    tags: install
+  - name: Reboot for guest OS installation
+    reboot:
+      reboot_timeout: 120
+    tags: 
+      - install-guest-additions
