@@ -12,10 +12,9 @@ to bootstrap a pentest virtual machine
 
 # Getting started
 
-Fetch submodules
+Update submodules
 ```bash
-git submodule init
-git submodule update --recursive
+make update-submodule
 ```
 
 Deploy vagrant pentest
