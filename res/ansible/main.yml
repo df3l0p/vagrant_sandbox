@@ -21,12 +21,20 @@
       update_cache: yes
     tags:
       - install-update
+  
+  - name: Add apt key for docker
+    apt_key:
+      url: https://download.docker.com/linux/debian/gpg
+      state: present
+    tags: 
+      - install-docker
 
   - name: Add docker repository
     apt_repository:
       repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
       state: present
       filename: docker
+      update_cache: yes
     tags: 
       - install-docker
 
@@ -36,6 +44,14 @@
       apply:
         tags:
           - install-docker
+    tags: 
+      - install-docker
+
+  - name: Add vagrant to docker group
+    user:
+      append: yes
+      name: vagrant
+      groups: docker
     tags: 
       - install-docker
 
