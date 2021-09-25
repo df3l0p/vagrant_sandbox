@@ -1,4 +1,3 @@
 packages:
-  - burpsuite
   - terminator
   - kmod
