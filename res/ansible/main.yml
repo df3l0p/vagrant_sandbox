@@ -29,22 +29,30 @@
     tags: 
       - install-docker
 
-  - name: Add docker repository
-    apt_repository:
-      repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
-      state: present
-      filename: docker
+  - name: Install docker
+    ansible.builtin.apt:
+      pkg:
+        - docker.io
+      state: latest
       update_cache: yes
-    tags: 
+    tags:
       - install-docker
 
-  - name: Import role ansible-role-docker
-    include_role:
-      name: ansible-role-docker
-      apply:
-        tags:
-          - install-docker
-    tags: 
+  - name: Enable docker on systemd
+    ansible.builtin.systemd:
+      name: docker
+      enabled: yes
+      state: started
+    tags:
+      - install-docker
+
+  - name: Add vagrant to docker group
+    user:
+      name: vagrant
+      groups: docker
+      append: yes
+    become: yes
+    tags:
       - install-docker
 
   - name: Add vagrant to docker group
@@ -61,27 +69,27 @@
         "{{ packages }}"
       state: latest
       update_cache: yes
-    tags: 
+    tags:
       - install-base-packages
-    
+
   - name: Reboot a machine that might have lots of updates to apply
     reboot:
-      reboot_timeout: 120
-    tags: 
+      reboot_timeout: 3000
+    tags:
       - install-update
       - install-base-packages
 
-  - name: Import role ansible-role-virtualbox-guest
-    include_role:
-      name: ansible-role-virtualbox-guest
-      apply:
-        tags:
-          - install-guest-additions
-    tags: 
-      - install-guest-additions
+  #- name: Import role ansible-role-virtualbox-guest
+  #  include_role:
+  #    name: ansible-role-virtualbox-guest
+  #    apply:
+  #      tags:
+  #        - install-guest-additions
+  #  tags:
+  #    - install-guest-additions
 
-  - name: Reboot for guest OS installation
-    reboot:
-      reboot_timeout: 120
-    tags: 
-      - install-guest-additions
+  #- name: Reboot for guest OS installation
+  #  reboot:
+  #    reboot_timeout: 120
+  #  tags:
+  #    - install-guest-additions
