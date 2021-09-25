@@ -3,7 +3,7 @@
 targets = {
     "pentest" => {
         "box"           => "kalilinux/rolling",
-        "version"       => "2020.2.1",
+        "version"       => "2021.3.0",
         "ip"            => "",
         "reqAudio"      => true,
         "playbooks"     => [
