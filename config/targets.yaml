@@ -1,0 +1,18 @@
+---
+  targets:
+    pentest:
+      box: kalilinux/rolling 
+      version: 2021.3.0
+      # other ranges could fail? 
+      # see: https://github.com/hashicorp/vagrant/issues/12557
+      ip: 192.168.56.105
+      cpus: 2 
+      memory: 2048
+      vram: 32
+      gui: true
+      reqAudio: false
+      ask_vault_pass  : false
+      ansible_supplier: ansible_local
+      playbooks:
+        - res/ansible/main.yml
+...
