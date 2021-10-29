@@ -57,24 +57,9 @@
     tags:
       - install-base-packages
 
-  - name: Reboot a machine that might have lots of updates to apply
-    reboot:
-      reboot_timeout: 3000
+  # since we now use the ansible_local provider, we canot use the reboot
+  # module to reboot the host. The following error is thrown:
+  # fatal: [pentest]: FAILED! => {"changed": false, "elapsed": 0, "msg": "Running reboot with local connection would reboot the control node.", "rebooted": false}
+  - debug: msg="Reboot host MANUALLY to apply updates"
     tags:
-      - install-update
-      - install-base-packages
-
-  #- name: Import role ansible-role-virtualbox-guest
-  #  include_role:
-  #    name: ansible-role-virtualbox-guest
-  #    apply:
-  #      tags:
-  #        - install-guest-additions
-  #  tags:
-  #    - install-guest-additions
-
-  #- name: Reboot for guest OS installation
-  #  reboot:
-  #    reboot_timeout: 120
-  #  tags:
-  #    - install-guest-additions
+      - reboot
