@@ -17,7 +17,7 @@
 
   - name: Update all packages to the latest version
     apt:
-      upgrade: dist
+      state: latest
       update_cache: yes
     tags:
       - install-update
@@ -49,7 +49,7 @@
       - install-docker
 
   - name: Install base packages
-    apt:
+    ansible.builtin.apt:
       pkg: 
         "{{ packages }}"
       state: latest
@@ -57,9 +57,14 @@
     tags:
       - install-base-packages
 
+  - name: Install NordVPN
+    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
+    tags:
+      - install-nordvpn
+
   # since we now use the ansible_local provider, we canot use the reboot
   # module to reboot the host. The following error is thrown:
   # fatal: [pentest]: FAILED! => {"changed": false, "elapsed": 0, "msg": "Running reboot with local connection would reboot the control node.", "rebooted": false}
-  - debug: msg="Reboot host MANUALLY to apply updates"
+  - ansible.builtin.debug: msg="Reboot host MANUALLY to apply updates"
     tags:
       - reboot

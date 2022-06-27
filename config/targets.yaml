@@ -2,7 +2,7 @@
   targets:
     pentest:
       box: kalilinux/rolling 
-      version: 2021.3.0
+      version: 2022.2.0
       # other ranges could fail? 
       # see: https://github.com/hashicorp/vagrant/issues/12557
       ip: 192.168.56.105
