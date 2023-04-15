@@ -1,3 +1,6 @@
 packages:
   - terminator
   - kmod
+  - tesseract-ocr
+  - nodejs
+  - chromium
