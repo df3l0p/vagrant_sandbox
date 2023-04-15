@@ -2,12 +2,12 @@
   targets:
     pentest:
       box: kalilinux/rolling 
-      version: 2022.2.0
+      version: 2023.1.0
       # other ranges could fail? 
       # see: https://github.com/hashicorp/vagrant/issues/12557
       ip: 192.168.56.105
-      cpus: 2 
-      memory: 2048
+      cpus: 3
+      memory: 4096
       vram: 32
       gui: true
       reqAudio: false

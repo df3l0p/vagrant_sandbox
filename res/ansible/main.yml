@@ -58,7 +58,7 @@
       - install-base-packages
 
   - name: Install NordVPN
-    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
+    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -s -- -n"
     tags:
       - install-nordvpn
 
