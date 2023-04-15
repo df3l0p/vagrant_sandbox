@@ -3,3 +3,4 @@ packages:
   - kmod
   - tesseract-ocr
   - nodejs
+  - chromium
