@@ -4,9 +4,6 @@
   become: yes
   tasks:
 
-  # This allows you to define os specific variables
-  # Facts can be collected using the following command
-  # ansible -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory all -m setup -a 'gather_subset=!all' 
   - name: Gather os specific variables
     include_vars: "{{ item }}" 
     with_first_found:
@@ -14,6 +11,14 @@
     - "vars/{{ ansible_distribution_version | lower }}.yml"
     tags: 
       - set-vars
+
+  - include_role:
+      name: ansible-role-virtualbox-guest
+      apply:
+        tags: 
+          - install-vboxguest
+    tags:
+      - install-vboxguest
 
   - name: Update all packages to the latest version
     apt:
@@ -57,10 +62,74 @@
     tags:
       - install-base-packages
 
+  ## Nord VPN
+  #########################################
   - name: Install NordVPN
-    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -s -- -n"
+    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
     tags:
       - install-nordvpn
+
+  ## Burp community
+  #########################################
+  - name: Download Burp Suite
+    ansible.builtin.get_url:
+      url: https://portswigger.net/burp/releases/download?product=community&type=linux
+      dest: /tmp/burpcommunity.sh
+      mode: '0755'
+    tags: install-burp
+
+  - name: Install Burp
+    # this is to deal with burpcommunity prompt installtion
+    #   This will install Burp Suite Community Edition on your computer.
+    #   OK [o, Enter], Cancel [c]
+    #   Where should Burp Suite Community Edition be installed?
+    #   [/home/vagrant/BurpSuiteCommunity]
+    #   Create symlinks?
+    #   Yes [y, Enter], No [n]
+    #   Select the folder where you would like Burp Suite Community Edition to create symlinks, then click Next.
+    #   [/usr/local/bin]
+    #   Extracting files ...
+    #   ...
+    ansible.builtin.shell: |
+      /tmp/burpcommunity.sh << EOF
+      o
+      /opt/BurpSuiteCommunity
+      y
+      /usr/local/bin
+      EOF
+    tags: install-burp
+
+  ## OleVBA
+  #########################################
+  - name: Install Olevba tools
+    ansible.builtin.shell: python3 -m pip install --upgrade pip oletools
+    tags: install-oletools
+
+  ## pdfid, pdf-parser (DidierStensSuite)
+  #########################################
+  - name: Clone DidierStevensSuite from GitHub
+    git:
+      repo: 'https://github.com/DidierStevens/DidierStevensSuite.git'
+      dest: '/opt/DidierStevensSuite'
+      force: yes
+    tags: install-pdftools
+
+  - name: Make scripts executable
+    file:
+      path: "/opt/DidierStevensSuite/{{ item }}"
+      mode: '0755'
+    loop:
+      - pdf-parser.py
+      - pdfid.py
+    tags: install-pdftools
+
+  - name: Add DidierStevensSuite to PATH in .bashrc
+    lineinfile:
+      path: '/home/vagrant/.bashrc'
+      line: 'export PATH=$PATH:/opt/DidierStevensSuite'
+      state: present
+    become_user: vagrant
+    tags: install-pdftools
 
   # since we now use the ansible_local provider, we canot use the reboot
   # module to reboot the host. The following error is thrown:
