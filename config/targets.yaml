@@ -1,21 +1,19 @@
----
-  targets:
-    pentest-test:
-      box: ubuntu/jammy64
-      version: 20230510.0.0
-      # other ranges could fail? 
-      # see: https://github.com/hashicorp/vagrant/issues/12557
-      ip: 192.168.56.105
-      cpus: 2 
-      memory: 2048
-      vram: 32
-      gui: true
-      reqAudio: false
-      ask_vault_pass  : false
-      playbooks:
-        # this requires ansible on the host.
-        - path: res/ansible/vboxguest.yml
-          supplier: ansible
-        - path: res/ansible/main.yml
-          supplier: ansible_local
-...
+targets:
+  pentest-test:
+    box: ubuntu/jammy64
+    version: 20230510.0.0
+    # other ranges could fail?
+    # see: https://github.com/hashicorp/vagrant/issues/12557
+    ip: 192.168.56.105
+    cpus: 3
+    memory: 4096
+    vram: 32
+    gui: true
+    reqAudio: false
+    playbooks:
+      # this requires ansible on the host.
+      - path: res/ansible/vboxguest.yml
+        supplier: ansible
+        ask_vault_pass: false
+      - path: res/ansible/main.yml
+        supplier: ansible_local

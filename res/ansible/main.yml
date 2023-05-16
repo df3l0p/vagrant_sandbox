@@ -27,13 +27,6 @@
     tags:
       - install-base-packages
 
-  - name: Change vagrant shell
-    user:
-      name: vagrant
-      shell: /bin/zsh
-    tags:
-      - config-shell
-
   ## docker
   #########################################
   - name: Install docker
@@ -125,7 +118,7 @@
 
   - name: Adding pdftools to shell profile
     lineinfile:
-      path: '/home/vagrant/.zshrc'
+      path: '/home/vagrant/.bashrc'
       line: 'export PATH=$PATH:/opt/DidierStevensSuite'
       state: present
     become_user: vagrant

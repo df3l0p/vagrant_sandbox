@@ -91,7 +91,7 @@ Vagrant.configure("2") do |config|
                     ansible.playbook = playbook["path"]
                     # ansible_local does not support vault pass.
                     if playbook["supplier"] != "ansible_local"
-                      ansible.ask_vault_pass = target["ask_vault_pass"]
+                      ansible.ask_vault_pass = playbook["ask_vault_pass"]
                     end
                 end
             end
