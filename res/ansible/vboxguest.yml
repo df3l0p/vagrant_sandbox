@@ -1,0 +1,11 @@
+- hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - include_role:
+      name: ansible-role-virtualbox-guest
+      apply:
+        tags: 
+          - install-vboxguest
+    tags:
+      - install-vboxguest
