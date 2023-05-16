@@ -1,0 +1,9 @@
+packages:
+  - ubuntu-desktop
+  - zsh
+  - terminator
+  - kmod
+  - unzip
+  - git
+  - python3
+  - python3-pip
