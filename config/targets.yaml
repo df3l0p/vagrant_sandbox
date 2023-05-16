@@ -12,7 +12,10 @@
       gui: true
       reqAudio: false
       ask_vault_pass  : false
-      ansible_supplier: ansible_local
       playbooks:
-        - res/ansible/main.yml
+        # this requires ansible on the host.
+        - path: res/ansible/vboxguest.yml
+          supplier: ansible
+        - path: res/ansible/main.yml
+          supplier: ansible_local
 ...

@@ -1,5 +1,9 @@
 packages:
-  - ubuntu-desktop
+  # GUI
+  - lightdm
+  - xfce4
+  #- ubuntu-desktop # this is for gnome4
+  # base tools
   - zsh
   - terminator
   - kmod

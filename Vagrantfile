@@ -61,6 +61,10 @@ Vagrant.configure("2") do |config|
                 end
                 
                 vb.gui = target["gui"]
+                # set the right graphics on linux
+                if OS.linux?
+                    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+                end
 
                 # Setups audio
                 if target["reqAudio"]
@@ -81,18 +85,12 @@ Vagrant.configure("2") do |config|
                 build.vm.network "private_network", ip: target["ip"]
             end
             
-            # Runs the playbooks for a given target 
-            # Vagrant generates host file under .vagrant/provisioners/ansible/
-            # Further information available at :
-            # https://www.vagrantup.com/docs/provisioning/ansible_intro.html
-            # To avoid running playbook each time execute the following
-            # export ANSIBLE_HOST_KEY_CHECKING=False
-            # ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory res/ansible/pb-dummy.yml
+            # loops through all playbooks and execute it with right supplier.
             target["playbooks"].each do |playbook|
-                build.vm.provision target["ansible_supplier"] do |ansible|
-                    ansible.playbook = playbook
+                build.vm.provision playbook["supplier"] do |ansible|
+                    ansible.playbook = playbook["path"]
                     # ansible_local does not support vault pass.
-                    if target["ansible_supplier"] != "ansible_local"
+                    if playbook["supplier"] != "ansible_local"
                       ansible.ask_vault_pass = target["ask_vault_pass"]
                     end
                 end
