@@ -1,7 +1,7 @@
-# Vagrant pentest
+# Vagrant sandbox
 
 This repository hosts the vagrantfile and relevant resoures 
-to bootstrap a pentest virtual machine
+to bootstrap a sandbox virtual machine
 
 # Requirements
 
@@ -18,7 +18,7 @@ Update submodules
 make update-submodule
 ```
 
-Deploy vagrant pentest
+Deploy vagrant sandbox
 ```bash
 vagrant up
 ```

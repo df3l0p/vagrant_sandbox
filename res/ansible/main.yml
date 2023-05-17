@@ -197,7 +197,7 @@
     ansible.builtin.apt:
       name: brave-browser
       state: present
-      updat_cache: yes
+      update_cache: yes
 
   # since we now use the ansible_local provider, we canot use the reboot
   # module to reboot the host. The following error is thrown:
