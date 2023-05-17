@@ -29,7 +29,7 @@
 
   ## docker
   #########################################
-  - name: Install docker
+  - name: Docker - Installation
     ansible.builtin.apt:
       pkg:
         - docker.io
@@ -38,7 +38,7 @@
     tags:
       - install-docker
 
-  - name: Enable docker on systemd
+  - name: Docker - Enable docker on systemd
     ansible.builtin.systemd:
       name: docker
       enabled: yes
@@ -46,7 +46,7 @@
     tags:
       - install-docker
 
-  - name: Add vagrant to docker group
+  - name: Docker - Add vagrant to docker group
     user:
       name: vagrant
       groups: docker
@@ -57,21 +57,22 @@
 
   ## Nord VPN
   #########################################
-  - name: Install NordVPN
+  - name: NordVPN - Installation
     ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
     tags:
       - install-nordvpn
 
   ## Burp community
   #########################################
-  - name: Download Burp Suite
+  - name: Burp - Download
     ansible.builtin.get_url:
       url: https://portswigger.net/burp/releases/download?product=community&type=linux
+      # other URL: https://portswigger.net/burp/releases/download?product=community&version=2023.5.1&type=linux
       dest: /tmp/burpcommunity.sh
       mode: '0755'
     tags: install-burp
 
-  - name: Install Burp
+  - name: Burp - Installation
     # this is to deal with burpcommunity prompt installtion
     #   This will install Burp Suite Community Edition on your computer.
     #   OK [o, Enter], Cancel [c]
@@ -94,21 +95,30 @@
 
   ## OleVBA
   #########################################
-  - name: Install Olevba tools
+  - name: Olevba - Install requirements
+    ansible.builtin.apt:
+      name:
+        - python3
+        - python3-pip
+      state: present
+      update_cache: yes
+    tags: install-oletools
+
+  - name: Olevba - Installation
     ansible.builtin.shell: python3 -m pip install --upgrade pip oletools
     tags: install-oletools
 
   ## pdfid, pdf-parser (DidierStensSuite)
   #########################################
-  - name: Cloning pdf github tools
-    git:
+  - name: Pdftools - Cloning pdf github tools
+    ansible.builtin.git:
       repo: 'https://github.com/DidierStevens/DidierStevensSuite.git'
       dest: '/opt/DidierStevensSuite'
       force: yes
     tags: install-pdftools
 
-  - name: Adding execution permission to the pdf tools
-    file:
+  - name: Pdftools - Adding execution permission to the pdf tools
+    ansible.builtin.file:
       path: "/opt/DidierStevensSuite/{{ item }}"
       mode: '0755'
     loop:
@@ -116,13 +126,78 @@
       - pdfid.py
     tags: install-pdftools
 
-  - name: Adding pdftools to shell profile
-    lineinfile:
+  - name: Pdftools - Adding pdftools to shell profile
+    ansible.builtin.lineinfile:
       path: '/home/vagrant/.bashrc'
       line: 'export PATH=$PATH:/opt/DidierStevensSuite'
       state: present
     become_user: vagrant
     tags: install-pdftools
+
+  ## Ghidra
+  #########################################
+  - name: Ghidra - Install requirements
+    ansible.builtin.apt:
+      name:
+        - openjdk-17-jdk
+        - wget
+        - unzip
+      state: present
+      update_cache: yes
+    tags: install-ghidra
+
+  - name: Ghidra - Set the PATH environment for JAVA
+    ansible.builtin.lineinfile:
+      path: '/home/vagrant/.bashrc'
+      line: 'export PATH=$PATH:/usr/lib/jvm/java-17-openjdk-amd64/bin/'
+      state: present
+    tags: install-ghidra
+
+  - name: Ghidra - Download
+    ansible.builtin.get_url:
+      url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.3_build/ghidra_10.3_PUBLIC_20230510.zip
+      dest: /tmp/ghidra.zip
+    tags: install-ghidra
+
+  - name: Ghidra - Unzip
+    ansible.builtin.unarchive:
+      src: /tmp/ghidra.zip
+      dest: /opt/
+      creates: /opt/ghidra
+    tags: install-ghidra
+
+  - name: Ghidra - Rename Ghidra directory
+    ansible.builtin.shell:
+      cmd: mv /opt/ghidra_* /opt/ghidra
+      creates: /opt/ghidra
+    tags: install-ghidra
+
+  - name: Ghidra - Set the PATH environment variable
+    ansible.builtin.lineinfile:
+      path: '/home/vagrant/.bashrc'
+      line: 'export PATH=$PATH:/opt/ghidra'
+      state: present
+    tags: install-ghidra
+
+  ## Brave
+  #########################################
+  - name: Brave - Import repository key
+    ansible.builtin.apt_key:
+      url: https://brave-browser-apt-release.s3.brave.com/brave-core.asc
+      state: present
+    tags: install-brave
+
+  - name: Brave - Add the Brave Browser repository
+    ansible.builtin.apt_repository:
+      repo: "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main"
+      state: present
+    tags: install-brave
+
+  - name: Brave - Install Brave Browser
+    ansible.builtin.apt:
+      name: brave-browser
+      state: present
+      updat_cache: yes
 
   # since we now use the ansible_local provider, we canot use the reboot
   # module to reboot the host. The following error is thrown:
