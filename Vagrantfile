@@ -66,6 +66,9 @@ Vagrant.configure("2") do |config|
                     vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
                 end
 
+                # enables copy/paste with host and vm
+                vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+
                 # Setups audio
                 if target["reqAudio"]
                     vb.customize [

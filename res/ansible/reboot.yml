@@ -1,0 +1,8 @@
+- hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+
+  - name: Rebooting
+    ansible.builtin.reboot:
+      reboot_timeout: 300

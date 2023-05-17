@@ -84,13 +84,15 @@
     #   [/usr/local/bin]
     #   Extracting files ...
     #   ...
-    ansible.builtin.shell: |
-      /tmp/burpcommunity.sh << EOF
-      o
-      /opt/BurpSuiteCommunity
-      y
-      /usr/local/bin
-      EOF
+    ansible.builtin.shell:
+      cmd: |-
+        /tmp/burpcommunity.sh << EOF
+        o
+        /opt/BurpSuiteCommunity
+        y
+        /usr/local/bin
+        EOF
+      creates: /opt/BurpSuiteCommunity
     tags: install-burp
 
   ## OleVBA
@@ -110,11 +112,25 @@
 
   ## pdfid, pdf-parser (DidierStensSuite)
   #########################################
+  - name: Pdftools - Install pdf-to-text
+    ansible.builtin.apt:
+      name:
+        - poppler-utils
+      state: present
+      update_cache: yes
+    tags: install-pdftools
+
   - name: Pdftools - Cloning pdf github tools
     ansible.builtin.git:
       repo: 'https://github.com/DidierStevens/DidierStevensSuite.git'
       dest: '/opt/DidierStevensSuite'
       force: yes
+    tags: install-pdftools
+
+  - name: Pdftools - Set python alternatives
+    ansible.builtin.command:
+      cmd: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+      creates: /etc/alternatives/python
     tags: install-pdftools
 
   - name: Pdftools - Adding execution permission to the pdf tools
@@ -177,6 +193,23 @@
       path: '/home/vagrant/.bashrc'
       line: 'export PATH=$PATH:/opt/ghidra'
       state: present
+    tags: install-ghidra
+
+  - name: Ghidra - Create a .desktop shortcut for My Program
+    copy:
+      dest: /usr/share/applications/ghidra.desktop
+      owner: root
+      group: root
+      mode: '0755'
+      content: |
+        [Desktop Entry]
+        Type=Application
+        Name=Ghidra
+        Comment=Reverse engineer application
+        Icon=/opt/ghidra/docs/GhidraClass/Intermediate/Images/GhidraLogo64.png
+        Exec=/opt/ghidra/ghidraRun
+        Terminal=false
+        Categories=Utility;Application;
     tags: install-ghidra
 
   ## Brave

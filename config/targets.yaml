@@ -11,9 +11,13 @@ targets:
     gui: true
     reqAudio: false
     playbooks:
-      # this requires ansible on the host.
+      # we need to run this with ansible from the host to push the
+      # guest additions.
       - path: res/ansible/vboxguest.yml
         supplier: ansible
         ask_vault_pass: false
       - path: res/ansible/main.yml
         supplier: ansible_local
+      - path: res/ansible/reboot.yml
+        supplier: ansible
+        ask_vault_pass: false
