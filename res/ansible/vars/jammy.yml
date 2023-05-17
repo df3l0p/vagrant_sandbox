@@ -9,5 +9,5 @@ packages:
   - kmod
   - unzip
   - git
-  - python3
-  - python3-pip
+  - firefox
+  - chromium-browser
