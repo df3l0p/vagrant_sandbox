@@ -150,6 +150,28 @@
     become_user: vagrant
     tags: install-pdftools
 
+  ## Tesseract
+  #########################################
+  - name: Tesseract - Installation
+    ansible.builtin.apt:
+      name:
+        - tesseract-ocr
+      state: present
+      update_cache: yes
+    tags: install-tesseract
+
+  - name: Tesseract - install fra package
+    ansible.builtin.get_url:
+      url: https://github.com/tesseract-ocr/tessdata/raw/4.00/fra.traineddata
+      dest: /usr/share/tesseract-ocr/4.00/tessdata/
+    tags: install-tesseract
+
+  - name: Tesseract - install eng package
+    ansible.builtin.get_url:
+      url: https://github.com/tesseract-ocr/tessdata/raw/4.00/eng.traineddata
+      dest: /usr/share/tesseract-ocr/4.00/tessdata/
+    tags: install-tesseract
+
   ## Ghidra
   #########################################
   - name: Ghidra - Install requirements
