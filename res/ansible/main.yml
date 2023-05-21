@@ -55,6 +55,45 @@
     tags:
       - install-docker
 
+  ## oh-my-zsh
+  #########################################
+  - name: Install Oh My Zsh
+    shell: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    args:
+      executable: /bin/bash
+      creates: /home/vagrant/.oh-my-zsh/
+    become_user: "vagrant"
+    changed_when: false
+    tags:
+      - install-ohmyzsh
+
+  - name: Install zsh-autosuggestions plugin
+    git:
+      repo: https://github.com/zsh-users/zsh-autosuggestions
+      dest: "/home/vagrant/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+      force: yes
+    become_user: "vagrant"
+    tags:
+      - install-ohmyzsh
+
+  - name: Enable zsh-autosuggestions plugin
+    lineinfile:
+      path: "/home/vagrant/.zshrc"
+      backrefs: yes
+      regexp: '^plugins=\((.*)\)'
+      line: 'plugins=(\1 zsh-autosuggestions)'
+    become_user: "vagrant"
+    when: lookup('file', "/home/vagrant/.zshrc") is not search('zsh-autosuggestions')
+    tags:
+      - install-ohmyzsh
+
+  - name: Set zsh as default shell
+    user:
+      name: "vagrant"
+      shell: /bin/zsh
+    tags:
+      - install-ohmyzsh
+
   ## Nord VPN
   #########################################
   - name: NordVPN - Installation
@@ -144,7 +183,7 @@
 
   - name: Pdftools - Adding pdftools to shell profile
     ansible.builtin.lineinfile:
-      path: '/home/vagrant/.bashrc'
+      path: '/home/vagrant/.zshrc'
       line: 'export PATH=$PATH:/opt/DidierStevensSuite'
       state: present
     become_user: vagrant
@@ -186,7 +225,7 @@
 
   - name: Ghidra - Set the PATH environment for JAVA
     ansible.builtin.lineinfile:
-      path: '/home/vagrant/.bashrc'
+      path: '/home/vagrant/.zshrc'
       line: 'export PATH=$PATH:/usr/lib/jvm/java-17-openjdk-amd64/bin/'
       state: present
     tags: install-ghidra
@@ -212,7 +251,7 @@
 
   - name: Ghidra - Set the PATH environment variable
     ansible.builtin.lineinfile:
-      path: '/home/vagrant/.bashrc'
+      path: '/home/vagrant/.zshrc'
       line: 'export PATH=$PATH:/opt/ghidra'
       state: present
     tags: install-ghidra
@@ -253,10 +292,3 @@
       name: brave-browser
       state: present
       update_cache: yes
-
-  # since we now use the ansible_local provider, we canot use the reboot
-  # module to reboot the host. The following error is thrown:
-  # fatal: [pentest]: FAILED! => {"changed": false, "elapsed": 0, "msg": "Running reboot with local connection would reboot the control node.", "rebooted": false}
-  - ansible.builtin.debug: msg="Reboot host MANUALLY to apply updates"
-    tags:
-      - reboot

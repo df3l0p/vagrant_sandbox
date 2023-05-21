@@ -1,5 +1,5 @@
 targets:
-  sandbox-01:
+  sandbox-02:
     box: ubuntu/jammy64
     version: 20230510.0.0
     # other ranges could fail?
