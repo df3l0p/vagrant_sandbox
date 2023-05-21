@@ -1,18 +1,23 @@
----
-  targets:
-    pentest:
-      box: kalilinux/rolling 
-      version: 2023.1.0
-      # other ranges could fail? 
-      # see: https://github.com/hashicorp/vagrant/issues/12557
-      ip: 192.168.56.105
-      cpus: 3
-      memory: 4096
-      vram: 32
-      gui: true
-      reqAudio: false
-      ask_vault_pass  : false
-      ansible_supplier: ansible_local
-      playbooks:
-        - res/ansible/main.yml
-...
+targets:
+  sandbox-01:
+    box: ubuntu/jammy64
+    version: 20230510.0.0
+    # other ranges could fail?
+    # see: https://github.com/hashicorp/vagrant/issues/12557
+    ip: 192.168.56.105
+    cpus: 3
+    memory: 4096
+    vram: 32
+    gui: true
+    reqAudio: false
+    playbooks:
+      # we need to run this with ansible from the host to push the
+      # guest additions.
+      - path: res/ansible/vboxguest.yml
+        supplier: ansible
+        ask_vault_pass: false
+      - path: res/ansible/main.yml
+        supplier: ansible_local
+      - path: res/ansible/reboot.yml
+        supplier: ansible
+        ask_vault_pass: false

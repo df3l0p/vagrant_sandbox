@@ -1,0 +1,12 @@
+packages:
+  # GUI
+  - ubuntu-desktop # this is for gnome4
+  - cinnamon # this is for gnome4
+  # base tools
+  - zsh
+  - terminator
+  - kmod
+  - unzip
+  - git
+  - firefox
+  - chromium-browser
