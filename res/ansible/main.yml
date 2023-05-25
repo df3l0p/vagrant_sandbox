@@ -23,7 +23,7 @@
       pkg: 
         "{{ packages }}"
       state: latest
-      update_cache: yes
+      update_cache: no
     tags:
       - install-base-packages
 
@@ -34,7 +34,7 @@
       pkg:
         - docker.io
       state: latest
-      update_cache: yes
+      update_cache: no
     tags:
       - install-docker
 
@@ -142,7 +142,7 @@
         - python3
         - python3-pip
       state: present
-      update_cache: yes
+      update_cache: no
     tags: install-oletools
 
   - name: Olevba - Installation
@@ -156,7 +156,7 @@
       name:
         - poppler-utils
       state: present
-      update_cache: yes
+      update_cache: no
     tags: install-pdftools
 
   - name: Pdftools - Cloning pdf github tools
@@ -196,7 +196,7 @@
       name:
         - tesseract-ocr
       state: present
-      update_cache: yes
+      update_cache: no
     tags: install-tesseract
 
   - name: Tesseract - install fra package
@@ -220,7 +220,7 @@
         - wget
         - unzip
       state: present
-      update_cache: yes
+      update_cache: no
     tags: install-ghidra
 
   - name: Ghidra - Set the PATH environment for JAVA
@@ -228,6 +228,7 @@
       path: '/home/vagrant/.zshrc'
       line: 'export PATH=$PATH:/usr/lib/jvm/java-17-openjdk-amd64/bin/'
       state: present
+    become_user: vagrant
     tags: install-ghidra
 
   - name: Ghidra - Download
@@ -254,6 +255,7 @@
       path: '/home/vagrant/.zshrc'
       line: 'export PATH=$PATH:/opt/ghidra'
       state: present
+    become_user: vagrant
     tags: install-ghidra
 
   - name: Ghidra - Create a .desktop shortcut for My Program
@@ -291,4 +293,66 @@
     ansible.builtin.apt:
       name: brave-browser
       state: present
-      update_cache: yes
+      update_cache: no
+    tags: install-brave
+
+  ## Yara
+  #########################################
+  - name: Yara - Installation
+    ansible.builtin.apt:
+      name: yara
+      state: present
+      update_cache: no
+    tags: install-yara
+
+  - name: Yara - Check if yara_scan exists in .zshrc
+    command: grep -Fq "yara_scan" /home/vagrant/.zshrc
+    register: shell_function_check
+    ignore_errors: true
+    changed_when: false
+    tags: install-yara
+
+  - name: Yara - Add yara_scan to .zshrc if it doesn't exist
+    blockinfile:
+      path: "/home/vagrant/.zshrc"
+      block: |
+        function yara_scan {
+          find "$1" -iname "*.yar*" | xargs -I % yara % "$2" 2> /dev/null
+        }
+    become_user: vagrant
+    when: shell_function_check.rc != 0
+    tags: install-yara
+
+  ## ClamAV
+  #########################################
+  - name: ClamAV - Installation
+    ansible.builtin.apt:
+      name:
+        - clamav
+        - clamav-daemon
+      state: present
+      update_cache: no
+    tags: install-clamav
+
+  - name: ClamAV - Disable real time scanning
+    ansible.builtin.apt:
+      name:
+        - clamav
+        - clamav-daemon
+      state: present
+      update_cache: no
+    tags: install-clamav
+
+  - name: ClamAV - Ensure clamav-daemon is stopped and disabled
+    ansible.builtin.service:
+      name: clamav-daemon
+      state: stopped
+      enabled: false
+    tags: install-clamav
+
+  - name: ClamAV - Ensure freshclamav is running and enabled
+    ansible.builtin.service:
+      name: clamav-freshclam
+      state: started
+      enabled: true
+    tags: install-clamav
