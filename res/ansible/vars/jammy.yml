@@ -10,3 +10,6 @@ packages:
   - git
   - firefox
   - chromium-browser
+  # basic forensic tools
+  - libimage-exiftool-perl
+  - binwalk
