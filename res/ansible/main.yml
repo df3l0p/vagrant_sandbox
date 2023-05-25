@@ -343,14 +343,14 @@
       update_cache: no
     tags: install-clamav
 
-  - name: Ensure clamav-daemon is stopped and disabled
+  - name: ClamAV - Ensure clamav-daemon is stopped and disabled
     ansible.builtin.service:
       name: clamav-daemon
       state: stopped
       enabled: false
     tags: install-clamav
 
-  - name: Ensure freshclamav is running and enabled
+  - name: ClamAV - Ensure freshclamav is running and enabled
     ansible.builtin.service:
       name: clamav-freshclam
       state: started
