@@ -317,9 +317,9 @@
       path: "/home/vagrant/.zshrc"
       block: |
          function yara_scan {
-	         args=("$@")
-	         third_to_last=("${args[@]:2}")
-	         find "$1" -iregex ".*\.\(yar\|yml\|yaml\)$" | xargs -I % yara % "$2" $third_to_last 2> /dev/null
+            args=("$@")
+            third_to_last=("${args[@]:2}")
+            find "$1" -iregex ".*\.\(yar\|yml\|yaml\)$" | xargs -I % yara % "$2" $third_to_last 2> /dev/null
         }
     become_user: vagrant
     when: shell_function_check.rc != 0
