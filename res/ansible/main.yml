@@ -379,3 +379,30 @@
       state: present
       update_cache: no
     tags: install-vscode
+
+  ## Golang
+  #########################################
+  - name: Golang - Downloading
+    get_url:
+      url: https://dl.google.com/go/go1.20.5.linux-amd64.tar.gz
+      dest: /tmp/go.tar.gz
+      mode: '0755'
+    tags: install-golang
+
+  - name: Golang - Unarchiving/Installing
+    unarchive:
+      src: /tmp/go.tar.gz
+      dest: /usr/local
+      remote_src: yes
+    tags: install-golang
+
+  - name: Golang - Setting up env vars
+    lineinfile:
+      path: "/home/vagrant/.zshrc"
+      line: "export {{ item.key }}={{ item.value }}"
+    with_items:
+      - { key: "GOROOT", value: "/usr/local/go" }
+      - { key: "GOPATH", value: "/home/vagrant/go" }
+      - { key: "PATH", value: "$PATH:$GOROOT/bin:$GOPATH/bin" }
+    become_user: vagrant
+    tags: install-golang
