@@ -5,6 +5,7 @@ packages:
   # base tools
   - zsh
   - terminator
+  - vim-gtk
   - kmod
   - unzip
   - git
@@ -13,3 +14,4 @@ packages:
   # basic forensic tools
   - libimage-exiftool-perl
   - binwalk
+  - mpack # used for unpacking eml files.
