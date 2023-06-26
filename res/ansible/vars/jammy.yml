@@ -4,6 +4,7 @@ packages:
   - cinnamon # this is for gnome4
   # base tools
   - zsh
+  - vim-gtk
   - terminator
   - kmod
   - unzip
