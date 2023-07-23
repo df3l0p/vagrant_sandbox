@@ -94,12 +94,53 @@
     tags:
       - install-ohmyzsh
 
-  ## Nord VPN
+  ## ProtonVPN
   #########################################
-  - name: NordVPN - Installation
-    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
+  # This is to not get prompted for root when using the cli.
+  - name: ProtonVPN - add user as sudoers
+    shell: usermod -a -G sudo vagrant
+    changed_when: false
     tags:
-      - install-nordvpn
+      - install-protonvpn
+
+  # ubuntu is the default pick when you use the cli.
+  - name: ProtonVPN - Remove ubuntu user
+    user:
+      name: ubuntu
+      state: absent
+      remove: yes
+    tags:
+      - install-protonvpn
+
+  - name: ProtonVPN - Download deb
+    get_url:
+      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3_all.deb
+      dest: /tmp/package.deb
+      checksum: sha256:c409c819eed60985273e94e575fd5dfd8dd34baef3764fc7356b0f23e25a372c
+    tags:
+      - install-protonvpn
+
+  - name: ProtonVPN - Install deb
+    apt:
+      deb: /tmp/package.deb
+    tags:
+      - install-protonvpn
+
+  - name: ProtonVPN - Install package
+    apt:
+      name: protonvpn-cli
+      update_cache: yes
+    tags:
+      - install-protonvpn
+
+  - name: ProtonVPN - Upgrade required pip packages
+    pip:
+      name:
+        - pyopenssl
+        - cryptography
+      state: latest
+    tags:
+      - install-protonvpn
 
   ## Burp community
   #########################################
