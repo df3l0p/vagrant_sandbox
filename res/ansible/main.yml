@@ -154,7 +154,7 @@
       name:
         - python3-pip
       state: present
-      update_cache: no
+      update_cache: yes
     tags:
       - install-protonvpn
 
@@ -175,7 +175,7 @@
   - name: ProtonVPN - Install package
     ansible.builtin.apt:
       name: protonvpn-cli
-      update_cache: yes
+      update_cache: no
     tags:
       - install-protonvpn
 
