@@ -35,6 +35,8 @@ Connect to your instance with `vagrant ssh` and execute the following
 ```bash
 ansible -i localhost -m ping
 ansible-playbook -i localhost, -c local /vagrant/res/ansible/main.yml --tags some_tags
+# if use `vagrant ssh` and you get an error related to encoding issues, use:
+# export LC_ALL=C.UTF-8
 ```
 
 ## ansible
