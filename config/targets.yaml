@@ -18,6 +18,6 @@ targets:
         ask_vault_pass: false
       - path: res/ansible/main.yml
         supplier: ansible_local
-      - path: res/ansible/reboot.yml
+      - path: res/ansible/protonvpn.yml
         supplier: ansible
         ask_vault_pass: false
