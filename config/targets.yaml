@@ -15,9 +15,9 @@ targets:
       # guest additions.
       - path: res/ansible/vboxguest.yml
         supplier: ansible
-        ask_vault_pass: false
-      - path: res/ansible/main.yml
-        supplier: ansible_local
-      - path: res/ansible/reboot.yml
-        supplier: ansible
-        ask_vault_pass: false
+      #  ask_vault_pass: false
+      #- path: res/ansible/main.yml
+      #  supplier: ansible_local
+      #- path: res/ansible/reboot.yml
+      #  supplier: ansible
+      #  ask_vault_pass: false

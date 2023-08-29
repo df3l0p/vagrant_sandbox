@@ -13,9 +13,18 @@ to bootstrap a sandbox virtual machine
 
 # Getting started
 
+Install vagrant plugins
+```bash
+make setup-vagrant
+```
+
 Update submodules
 ```bash
 make update-submodule
+
+
+## todo
+vagrant plugin install vagrant-vbguest
 ```
 
 Deploy vagrant sandbox

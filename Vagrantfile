@@ -30,10 +30,13 @@ end
 audio_driver = ''
 if OS.linux?
     audio_driver = 'pulse'
+    vboxguest_path = '/usr/share/virtualbox/VBoxGuestAdditions.iso'
 elsif OS.mac?
     audio_driver = 'coreaudio'
+    vboxguest_path = '/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso'
 elsif OS.windows?
     audio_driver = 'dsound'
+    vboxguest_path = 'C:\Program files\Oracle\VirtualBox\VBoxGuestAdditions.iso'
 end
 
 Vagrant.configure("2") do |config|
@@ -65,6 +68,13 @@ Vagrant.configure("2") do |config|
                 if OS.linux?
                     vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
                 end
+
+                #vb.customize ["createhd", "--filename", "custom_disk", "--size", 1024]
+                #vb.customize ["storagectl", :id, "--name", "IDE Controller", "--add", "ide"]
+                #vb.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", 0, "--type", "dvddrive", "--medium", vboxguest_path]
+                vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
+                vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", vboxguest_path]
+
 
                 # enables copy/paste with host and vm
                 vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
