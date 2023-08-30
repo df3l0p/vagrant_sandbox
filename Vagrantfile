@@ -41,7 +41,7 @@ end
 
 Vagrant.configure("2") do |config|
     # Loop trough each target
-    targets.each do |name, target|
+    targets&.each do |name, target|
         box = target["box"]
 
         config.vm.define name do |build|
@@ -69,13 +69,6 @@ Vagrant.configure("2") do |config|
                     vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
                 end
 
-                #vb.customize ["createhd", "--filename", "custom_disk", "--size", 1024]
-                #vb.customize ["storagectl", :id, "--name", "IDE Controller", "--add", "ide"]
-                #vb.customize ["storageattach", :id, "--storagectl", "IDE Controller", "--port", "1", "--device", 0, "--type", "dvddrive", "--medium", vboxguest_path]
-                vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
-                vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", vboxguest_path]
-
-
                 # enables copy/paste with host and vm
                 vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
 
@@ -88,7 +81,13 @@ Vagrant.configure("2") do |config|
                         "--audioout", "on"
                     ]
                 end
+                if target["installGuest"]
+                    # creates SATA controller, disk and attaches ISO to it.
+                    vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
+                    vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", vboxguest_path]
+                end
             end
+
             # Test if version is provided
             if not target["version"].empty?
                 build.vm.box_version = target["version"]
@@ -97,9 +96,16 @@ Vagrant.configure("2") do |config|
             if not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
+
+            # we need to run provisionning modules here, and not in other parts of vagrant.
+            if target["installGuest"]
+                build.vm.provision "ansible" do |ansible|
+                    ansible.playbook = "res/ansible/vboxguest.yml"
+                end
+            end
             
             # loops through all playbooks and execute it with right supplier.
-            target["playbooks"].each do |playbook|
+            target["playbooks"]&.each do |playbook|
                 build.vm.provision playbook["supplier"] do |ansible|
                     ansible.playbook = playbook["path"]
                     # ansible_local does not support vault pass.

@@ -9,7 +9,7 @@
     tags:
       - install-vbox-guest
 
-  - name: Install required packages
+  - name: VBox guest - Install required packages
     apt:
       name:
         - build-essential
@@ -20,14 +20,14 @@
     tags:
       - install-vbox-guest
 
-  - name: Ensure the mount point exists
+  - name: VBox guest - Ensure the mount point exists
     file:
       path: /mnt/cdrom
       state: directory
     tags:
       - install-vbox-guest
 
-  - name: Mount the filesystem
+  - name: VBox guest - Mount the filesystem
     mount:
       path: /mnt/cdrom
       src: /dev/cdrom
@@ -36,13 +36,13 @@
     tags:
       - install-vbox-guest
 
-  - name: Run VBoxLinuxAdditions.run
+  - name: VBox guest - Run VBoxLinuxAdditions.run [stderr expected]
     command: sh /mnt/cdrom/VBoxLinuxAdditions.run
     ignore_errors: yes
     tags:
       - install-vbox-guest
 
-  - name: Mount the filesystem
+  - name: VBox guest - Unmount the filesystem
     mount:
       path: /mnt/cdrom
       fstype: iso9660
@@ -50,6 +50,6 @@
     tags:
       - install-vbox-guest
 
-  - name: Rebooting
+  - name: VBox guest - Rebooting
     ansible.builtin.reboot:
       reboot_timeout: 300
