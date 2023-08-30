@@ -3,29 +3,22 @@
   become: yes
   tasks:
 
-  #- include_role:
-  #    name: ansible-role-virtualbox-guest
-  #    apply:
-  #      tags: 
-  #        - install-vboxguest
-  #  tags:
-  #    - install-vboxguest
+  - name: VBox guest - Get Linux Kernel version
+    command: uname -r
+    register: kernel_version
+    tags:
+      - install-vbox-guest
 
   - name: Install required packages
     apt:
       name:
         - build-essential
         - dkms
-        - linux-headers-$(uname -r)
+        - linux-headers-{{ kernel_version.stdout }}
       state: present
+      update_cache: yes
     tags:
       - install-vbox-guest
-
-  #- name: Mount VirtualBox Guest Additions ISO
-  #  command: mount /dev/cdrom /mnt/cdrom
-  #  ignore_errors: yes
-  #  tags:
-  #    - install-vbox-guest
 
   - name: Ensure the mount point exists
     file:
@@ -38,7 +31,7 @@
     mount:
       path: /mnt/cdrom
       src: /dev/cdrom
-      #fstype: ext4
+      fstype: iso9660
       state: mounted
     tags:
       - install-vbox-guest
@@ -52,17 +45,10 @@
   - name: Mount the filesystem
     mount:
       path: /mnt/cdrom
-      #src: /dev/cdrom
-      #fstype: ext4
+      fstype: iso9660
       state: unmounted
     tags:
       - install-vbox-guest
-
-  #- name: Unmount VirtualBox Guest Additions ISO
-  #  command: umount /mnt/cdrom
-  #  tags:
-  #    - install-vbox-guest
-
 
   - name: Rebooting
     ansible.builtin.reboot:
