@@ -1,14 +1,5 @@
 SHELL := /bin/bash
 
-.PHONY: setup-vagrant
-setup-vagrant: ## Update submodules in repo.
-	vagrant plugin install vagrant-vbguest
-
-.PHONY: update-submodule
-update-submodule: ## Update submodules in repo.
-	git submodule init
-	git submodule update --recursive
-
 # https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
 help:
