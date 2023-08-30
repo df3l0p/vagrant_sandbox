@@ -1,6 +1,3 @@
-[submodule "res/ansible/roles/ansible-role-virtualbox-guest"]
-	path = res/ansible/roles/ansible-role-virtualbox-guest
-	url = https://github.com/df3l0p/ansible-role-virtualbox-guest.git
 [submodule "res/ansible/roles/ansible-role-docker"]
 	path = res/ansible/roles/ansible-role-docker
 	url = https://github.com/geerlingguy/ansible-role-docker.git
