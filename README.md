@@ -8,15 +8,10 @@ to bootstrap a sandbox virtual machine
 * vagrant
 * ansible
 * virtualbox
-* virtualbox-guest-additions-iso (for guest OS installation)
-* (optional) virtualbox extension. Menu available under File > Preferences > Extensions.
+* virtualbox-guest-additions-iso for guest OS installation. On linux it should be under `/usr/share/virtualbox/VBoxGuestAdditions.iso`
+* (optional) virtualbox extension pack. Menu available under File > Preferences > Extensions.
 
 # Getting started
-
-Update submodules
-```bash
-make update-submodule
-```
 
 Deploy vagrant sandbox
 ```bash

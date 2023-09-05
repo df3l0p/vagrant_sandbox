@@ -8,14 +8,10 @@ targets:
     cpus: 3
     memory: 4096
     vram: 32
+    installGuest: true  # only supported with Virtual Box
     gui: true
     reqAudio: false
     playbooks:
-      # we need to run this with ansible from the host to push the
-      # guest additions.
-      - path: res/ansible/vboxguest.yml
-        supplier: ansible
-        ask_vault_pass: false
       - path: res/ansible/main.yml
         supplier: ansible_local
       - path: res/ansible/protonvpn.yml
