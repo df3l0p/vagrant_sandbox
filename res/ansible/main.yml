@@ -3,11 +3,25 @@
   become: yes
   tasks:
 
+  - name: Print facts
+    debug:
+      var: hostvars[inventory_hostname]
+    tags: 
+      - set-vars
+
   - name: Gather os specific variables
     include_vars: "{{ item }}" 
     with_first_found:
     - "vars/{{ ansible_distribution_release | lower }}.yml"
     - "vars/{{ ansible_distribution_version | lower }}.yml"
+    - "vars/arch/{{ ansible_architecture | lower }}.yml"
+    tags: 
+      - set-vars
+
+  - name: Gather architecture specific variables
+    include_vars: "{{ item }}" 
+    with_first_found:
+    - "vars/arch/{{ ansible_architecture | lower }}.yml"
     tags: 
       - set-vars
 
@@ -94,19 +108,11 @@
     tags:
       - install-ohmyzsh
 
-  ## Nord VPN
-  #########################################
-  - name: NordVPN - Installation
-    ansible.builtin.shell: "wget -qO - https://downloads.nordcdn.com/apps/linux/install.sh | sh -"
-    tags:
-      - install-nordvpn
-
   ## Burp community
   #########################################
   - name: Burp - Download
     ansible.builtin.get_url:
-      url: https://portswigger.net/burp/releases/download?product=community&type=linux
-      # other URL: https://portswigger.net/burp/releases/download?product=community&version=2023.5.1&type=linux
+      url: "{{ burp_url }}"
       dest: /tmp/burpcommunity.sh
       mode: '0755'
     tags: install-burp
@@ -225,21 +231,81 @@
 
   - name: Ghidra - Set the PATH environment for JAVA
     ansible.builtin.lineinfile:
-      path: '/home/vagrant/.zshrc'
-      line: 'export PATH=$PATH:/usr/lib/jvm/java-17-openjdk-amd64/bin/'
+      path: "/home/vagrant/.zshrc"
+      line: "export {{ item.key }}={{ item.value }}"
       state: present
+    with_items:
+      - { key: "PATH", value: "$PATH:/usr/lib/jvm/java-17-openjdk-{{ apt_arch }}/bin/" }
     become_user: vagrant
     tags: install-ghidra
 
-  - name: Ghidra - Download
+  - name: Ghidra - Download gradle
     ansible.builtin.get_url:
-      url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.3_build/ghidra_10.3_PUBLIC_20230510.zip
+      url: "https://services.gradle.org/distributions/gradle-8.5-bin.zip"
+      dest: "/tmp/gradle.zip"
+      mode: '0755'
+    tags: install-ghidra
+
+  - name: Ghidra - Unzip gradle in /opt
+    ansible.builtin.unarchive:
+      src: /tmp/gradle.zip
+      dest: /opt/
+    tags: install-ghidra
+
+  - name: Ghidra - Rename to /opt/gradle
+    ansible.builtin.shell:
+      cmd: mv /opt/gradle-* /opt/gradle
+      creates: /opt/gradle
+    tags: install-ghidra
+
+  - name: Ghidra - Set environment variables for gradle
+    ansible.builtin.lineinfile:
+      path: "/home/vagrant/.zshrc"
+      line: "export {{ item.key }}={{ item.value }}"
+      state: present
+    with_items:
+      - { key: "PATH", value: "$PATH:/opt/gradle/bin" }
+      - { key: "GRADLE_HOME", value: "/opt/gradle/bin" }
+    become_user: vagrant
+    tags: install-ghidra
+
+  - name: Ghidra - Download source
+    ansible.builtin.get_url:
+      #todo(dfelo): use var for version.
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_10.4_build.zip
       dest: /tmp/ghidra.zip
+    tags: install-ghidra
+
+  - name: Ghidra - Unzip source
+    ansible.builtin.unarchive:
+      src: /tmp/ghidra.zip
+      dest: /tmp/
+      creates: /tmp/ghidra
+    become_user: vagrant
+    tags: install-ghidra
+
+  - name: Ghidra - build ghidra
+    shell: |
+      cd /tmp/ghidra*/ && \
+      gradle --init-script gradle/support/fetchDependencies.gradle init && \
+      gradle buildGhidra
+    args:
+      executable: /bin/bash
+    become_user: vagrant
+    tags: install-ghidra
+
+  - name: Ghidra - copy build
+    shell: |
+      cd /tmp/ghidra*/ && \
+      cp build/dist/*.zip /tmp/ghidra_build.zip
+    args:
+      executable: /bin/bash
+    become_user: vagrant
     tags: install-ghidra
 
   - name: Ghidra - Unzip
     ansible.builtin.unarchive:
-      src: /tmp/ghidra.zip
+      src: /tmp/ghidra_build.zip
       dest: /opt/
       creates: /opt/ghidra
     tags: install-ghidra
@@ -285,7 +351,7 @@
 
   - name: Brave - Add the Brave Browser repository
     ansible.builtin.apt_repository:
-      repo: "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main"
+      repo: "deb [arch={{ apt_arch }}] https://brave-browser-apt-release.s3.brave.com/ stable main"
       state: present
     tags: install-brave
 
@@ -369,7 +435,7 @@
 
   - name: VSCode - add repo
     apt_repository:
-      repo: deb [arch=amd64,arm64,armhf] http://packages.microsoft.com/repos/vscode stable main
+      repo: deb [arch={{ apt_arch }}] http://packages.microsoft.com/repos/vscode stable main
       state: present
     tags: install-vscode
 
@@ -384,7 +450,7 @@
   #########################################
   - name: Golang - Downloading
     get_url:
-      url: https://dl.google.com/go/go1.20.5.linux-amd64.tar.gz
+      url: "https://dl.google.com/go/go1.20.5.linux-{{ apt_arch }}.tar.gz"
       dest: /tmp/go.tar.gz
       mode: '0755'
     tags: install-golang
