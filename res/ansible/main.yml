@@ -111,6 +111,7 @@
   #########################################
   - name: Burp - Download
     ansible.builtin.get_url:
+      # other URL: https://portswigger.net/burp/releases/download?product=community&version=2023.5.1&type=linux
       url: "{{ burp_url }}"
       dest: /tmp/burpcommunity.sh
       mode: '0755'
