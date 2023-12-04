@@ -14,7 +14,6 @@
     with_first_found:
     - "vars/{{ ansible_distribution_release | lower }}.yml"
     - "vars/{{ ansible_distribution_version | lower }}.yml"
-    - "vars/arch/{{ ansible_architecture | lower }}.yml"
     tags: 
       - set-vars
 
