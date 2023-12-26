@@ -541,3 +541,22 @@
       group: root
       state: link
     tags: install-apfsfuse
+
+  ## plist
+  #########################################
+  - name: plist - install
+    ansible.builtin.apt:
+      name:
+        - libplist-utils # psutils
+      state: present
+      update_cache: yes
+    tags: install-plist
+
+  - name: plist - symlink
+    ansible.builtin.file:
+      src: /usr/bin/plistutil
+      dest: /usr/bin/plist
+      owner: root
+      group: root
+      state: link
+    tags: install-plist
