@@ -502,6 +502,7 @@
   - name: APFS fuse - cloning
     shell: |
       cd /tmp/ && \
+      rm -rf ./apfs-fuse && \
       git clone https://github.com/sgan81/apfs-fuse.git && \
       cd apfs-fuse && \
       git submodule init && \
@@ -513,6 +514,7 @@
 
   - name: APFS fuse - building
     shell: |
+      cd /tmp/apfs-fuse && \
       mkdir build && \
       cd build && \
       cmake .. && \
@@ -538,3 +540,4 @@
       owner: root
       group: root
       state: link
+    tags: install-apfsfuse
