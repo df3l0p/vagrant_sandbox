@@ -287,10 +287,10 @@
   - name: Ghidra - build ghidra
     shell: |
       cd /tmp/ghidra*/ && \
-      gradle --init-script gradle/support/fetchDependencies.gradle init && \
-      gradle buildGhidra
+      /opt/gradle/bin/gradle --init-script gradle/support/fetchDependencies.gradle init && \
+      /opt/gradle/bin/gradle buildGhidra
     args:
-      executable: /bin/bash
+      executable: /usr/bin/zsh
     become_user: vagrant
     tags: install-ghidra
 
@@ -299,7 +299,7 @@
       cd /tmp/ghidra*/ && \
       cp build/dist/*.zip /tmp/ghidra_build.zip
     args:
-      executable: /bin/bash
+      executable: /usr/bin/zsh
     become_user: vagrant
     tags: install-ghidra
 
