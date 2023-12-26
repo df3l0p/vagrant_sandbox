@@ -1,0 +1,2 @@
+apt_arch: arm64
+burp_url: "https://portswigger.net/burp/releases/download?product=community&version=2023.11.1.3&type=linuxArm64"
