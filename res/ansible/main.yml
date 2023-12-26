@@ -472,3 +472,60 @@
       - { key: "PATH", value: "$PATH:$GOROOT/bin:$GOPATH/bin" }
     become_user: vagrant
     tags: install-golang
+
+  ## APFS fuse
+  #########################################
+  - name: APFS fuse - requirements
+    ansible.builtin.apt:
+      name:
+        - fuse
+        - libfuse3-dev
+        - bzip2
+        - libbz2-dev
+        - cmake
+        - git
+        - libattr1-dev
+        - zlib1g-dev
+      state: present
+      update_cache: yes
+    tags: install-apfsfuse
+
+  - name: APFS fuse - cloning
+    shell: |
+      cd /tmp/ && \
+      git clone https://github.com/sgan81/apfs-fuse.git && \
+      cd apfs-fuse && \
+      git submodule init && \
+      git submodule update
+    args:
+      executable: /usr/bin/zsh
+    become_user: vagrant
+    tags: install-apfsfuse
+
+  - name: APFS fuse - building
+    shell: |
+      mkdir build && \
+      cd build && \
+      cmake .. && \
+      make
+    args:
+      executable: /usr/bin/zsh
+    become_user: vagrant
+    tags: install-apfsfuse
+
+  - name: APFS fuse - copy binary
+    ansible.builtin.copy:
+      src: /tmp/apfs-fuse/build/apfs-fuse
+      dest: /usr/local/bin/apfs-fuse
+      owner: root
+      group: root
+      mode: '0755'
+    tags: install-apfsfuse
+
+  - name: APFS fuse - fusermount symlink fix
+    ansible.builtin.file:
+      src: /bin/fusermount
+      dest: /bin/fusermount3
+      owner: root
+      group: root
+      state: link
