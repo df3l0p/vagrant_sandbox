@@ -14,6 +14,3 @@ targets:
     playbooks:
       - path: res/ansible/main.yml
         supplier: ansible_local
-      - path: res/ansible/reboot.yml
-        supplier: ansible
-        ask_vault_pass: false
