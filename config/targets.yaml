@@ -14,6 +14,3 @@ targets:
     playbooks:
       - path: res/ansible/main.yml
         supplier: ansible_local
-      - path: res/ansible/protonvpn.yml
-        supplier: ansible
-        ask_vault_pass: false
