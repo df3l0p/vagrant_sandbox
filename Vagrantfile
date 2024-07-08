@@ -108,10 +108,6 @@ Vagrant.configure("2") do |config|
                 end
             end
 
-            # Test if version is provided
-            #if not target["version"].empty?
-            #    build.vm.box_version = version
-            #end
             # Test if ip is provided
             if not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
