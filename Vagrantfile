@@ -42,12 +42,29 @@ end
 Vagrant.configure("2") do |config|
     # Loop trough each target
     targets&.each do |name, target|
-        box = target["box"]
-
         config.vm.define name do |build|
-            build.vm.box = box
-            
+            build.vm.provider "parallels" do |prl, override|
+                override.vm.box = target["parallels"]["box"]
+                if not target["parallels"]["version"].empty?
+                    override.vm.box_version = target["parallels"]["version"]
+                end
+
+                # Check if CPUs are defined
+                if target["cpus"]
+                    prl.cpus = target["cpus"]
+                end
+                # Check if memory is defined
+                if target["memory"]
+                    prl.memory = target["memory"]
+                end
+                prl.update_guest_tools = true
+            end
+
             build.vm.provider :virtualbox do |vb, override|
+                override.vm.box = target["virtualbox"]["box"]
+                if not target["virtualbox"]["version"].empty?
+                    override.vm.box_version = target["virtualbox"]["version"]
+                end
                 vb.name = name
 
                 # Check if CPUs are defined
@@ -85,25 +102,21 @@ Vagrant.configure("2") do |config|
                     # creates SATA controller, disk and attaches ISO to it.
                     vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
                     vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", vboxguest_path]
+                    override.vm.provision "ansible" do |ansible|
+                        ansible.playbook = "res/ansible/vboxguest.yml"
+                    end
                 end
             end
 
             # Test if version is provided
-            if not target["version"].empty?
-                build.vm.box_version = target["version"]
-            end
+            #if not target["version"].empty?
+            #    build.vm.box_version = version
+            #end
             # Test if ip is provided
             if not target["ip"].empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
 
-            # we need to run provisionning modules here, and not in other parts of vagrant.
-            if target["installGuest"]
-                build.vm.provision "ansible" do |ansible|
-                    ansible.playbook = "res/ansible/vboxguest.yml"
-                end
-            end
-            
             # loops through all playbooks and execute it with right supplier.
             target["playbooks"]&.each do |playbook|
                 build.vm.provision playbook["supplier"] do |ansible|
