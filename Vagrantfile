@@ -48,6 +48,7 @@ Vagrant.configure("2") do |config|
                 if not target["parallels"]["version"].empty?
                     override.vm.box_version = target["parallels"]["version"]
                 end
+                prl.name = name
 
                 # Check if CPUs are defined
                 if target["cpus"]
