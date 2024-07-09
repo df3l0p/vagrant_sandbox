@@ -61,6 +61,7 @@ Vagrant.configure("2") do |config|
                 end
                 prl.update_guest_tools = true
 
+                prl.customize "pre-boot", ["set", :id, "--device-set", "sound0", "--disable", "--disconnect"]
                 prl.customize "pre-boot", ["set", :id, "--device-set", "cdrom0", "--image", parallels_path, "--connect"]
                 prl.customize "pre-boot", ["set", :id, "--sync-host-printers", "off"]
                 prl.customize "pre-boot", ["set", :id, "--auto-share-camera", "off"]
