@@ -59,6 +59,10 @@ Vagrant.configure("2") do |config|
                     prl.memory = target["memory"]
                 end
                 prl.update_guest_tools = true
+
+                rl.customize "post-import", ["set", :id, "--sync-host-printers", "off"]
+                rl.customize "post-import", ["set", :id, "--auto-share-camera", "off"]
+                rl.customize "post-import", ["set", :id, "--auto-share-bluetooth", "off"]
             end
 
             build.vm.provider :virtualbox do |vb, override|
