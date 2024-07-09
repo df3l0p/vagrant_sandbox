@@ -272,7 +272,7 @@
   - name: Ghidra - Download source
     ansible.builtin.get_url:
       #todo(dfelo): use var for version.
-      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_10.4_build.zip
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.1.1_build.zip
       dest: /tmp/ghidra.zip
     tags: install-ghidra
 
@@ -344,14 +344,14 @@
   ## Brave
   #########################################
   - name: Brave - Import repository key
-    ansible.builtin.apt_key:
-      url: https://brave-browser-apt-release.s3.brave.com/brave-core.asc
-      state: present
+    ansible.builtin.get_url:
+      url: https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+      dest: /usr/share/keyrings/brave-browser-archive-keyring.gpg
     tags: install-brave
 
   - name: Brave - Add the Brave Browser repository
     ansible.builtin.apt_repository:
-      repo: "deb [arch={{ apt_arch }}] https://brave-browser-apt-release.s3.brave.com/ stable main"
+      repo: "deb [ arch={{ apt_arch }} signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg ] https://brave-browser-apt-release.s3.brave.com/ stable main"
       state: present
     tags: install-brave
 
@@ -531,9 +531,9 @@
 
   - name: ProtonVPN - Download deb
     ansible.builtin.get_url:
-      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3_all.deb
+      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb
       dest: /tmp/package.deb
-      checksum: sha256:c409c819eed60985273e94e575fd5dfd8dd34baef3764fc7356b0f23e25a372c
+      checksum: sha256:de7ef83a663049b5244736d3eabaacec003eb294a4d6024a8fbe0394f22cc4e5
     tags:
       - install-protonvpn
 

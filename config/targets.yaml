@@ -1,7 +1,11 @@
 targets:
   sandbox-01:
-    box: ubuntu/jammy64
-    version: 20230510.0.0
+    virtualbox:
+      box: ubuntu/jammy64
+      version: 20230510.0.0
+    parallels:
+      box: bento/ubuntu-22.04-arm64
+      version: 202401.31.0
     # other ranges could fail?
     # see: https://github.com/hashicorp/vagrant/issues/12557
     ip: 192.168.56.105
