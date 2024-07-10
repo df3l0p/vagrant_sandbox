@@ -34,6 +34,7 @@ if OS.linux?
 elsif OS.mac?
     audio_driver = 'coreaudio'
     vboxguest_path = '/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso'
+    parallels_path = '/Applications/Parallels Desktop.app/Contents/Resources/Tools/prl-tools-lin-arm.iso'
 elsif OS.windows?
     audio_driver = 'dsound'
     vboxguest_path = 'C:\Program files\Oracle\VirtualBox\VBoxGuestAdditions.iso'
@@ -48,6 +49,7 @@ Vagrant.configure("2") do |config|
                 if not target["parallels"]["version"].empty?
                     override.vm.box_version = target["parallels"]["version"]
                 end
+                prl.name = name
 
                 # Check if CPUs are defined
                 if target["cpus"]
@@ -58,6 +60,13 @@ Vagrant.configure("2") do |config|
                     prl.memory = target["memory"]
                 end
                 prl.update_guest_tools = true
+
+                prl.customize "pre-boot", ["set", :id, "--device-set", "sound0", "--disable", "--disconnect"]
+                prl.customize "pre-boot", ["set", :id, "--device-set", "cdrom0", "--image", parallels_path, "--connect"]
+                prl.customize "pre-boot", ["set", :id, "--sync-host-printers", "off"]
+                prl.customize "pre-boot", ["set", :id, "--auto-share-camera", "off"]
+                prl.customize "pre-boot", ["set", :id, "--auto-share-bluetooth", "off"]
+                prl.customize "pre-boot", ["set", :id, "--tools-autoupdate", "on"]
             end
 
             build.vm.provider :virtualbox do |vb, override|
