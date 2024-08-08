@@ -495,13 +495,17 @@
 
   # we have to remove netplan configs, otherwise this conflicts with network manager and
   # it will not work with protonvpn
-  - name: ProtonVPN - Remove netplan configs (conflict with network manager)
-    ansible.builtin.file:
-      path: "/etc/netplan/{{ item }}"
-      state: absent
-    with_items:
-      - '50-cloud-init.yaml'
-      - '50-vagrant.yaml'
+  - name: Find all .yaml files
+    find:
+      paths: /etc/netplan/
+      patterns: "*.yaml"
+    register: yaml_files
+    tags:
+      - install-protonvpn
+
+  - name: Rename .yaml to .yaml.bak
+    command: mv {{ item.path }} {{ item.path }}.bak
+    with_items: "{{ yaml_files.files }}"
     tags:
       - install-protonvpn
 
