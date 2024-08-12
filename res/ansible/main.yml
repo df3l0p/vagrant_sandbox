@@ -205,16 +205,15 @@
       update_cache: no
     tags: install-tesseract
 
-  - name: Tesseract - install fra package
+  - name: Tesseract - install language package
     ansible.builtin.get_url:
-      url: https://github.com/tesseract-ocr/tessdata/raw/4.00/fra.traineddata
+      url: "https://github.com/tesseract-ocr/tessdata/raw/4.00/{{ item }}.traineddata"
       dest: /usr/share/tesseract-ocr/4.00/tessdata/
-    tags: install-tesseract
-
-  - name: Tesseract - install eng package
-    ansible.builtin.get_url:
-      url: https://github.com/tesseract-ocr/tessdata/raw/4.00/eng.traineddata
-      dest: /usr/share/tesseract-ocr/4.00/tessdata/
+    with_items:
+      - fra
+      - eng
+      - chi_sim
+      - chi_tra
     tags: install-tesseract
 
   ## Ghidra
