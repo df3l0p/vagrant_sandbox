@@ -221,7 +221,7 @@
   - name: Ghidra - Install requirements
     ansible.builtin.apt:
       name:
-        - openjdk-17-jdk
+        - openjdk-21-jdk
         - wget
         - unzip
       state: present
@@ -234,13 +234,13 @@
       line: "export {{ item.key }}={{ item.value }}"
       state: present
     with_items:
-      - { key: "PATH", value: "$PATH:/usr/lib/jvm/java-17-openjdk-{{ apt_arch }}/bin/" }
+      - { key: "PATH", value: "$PATH:/usr/lib/jvm/java-21-openjdk-{{ apt_arch }}/bin/" }
     become_user: vagrant
     tags: install-ghidra
 
   - name: Ghidra - Download gradle
     ansible.builtin.get_url:
-      url: "https://services.gradle.org/distributions/gradle-8.5-bin.zip"
+      url: "https://services.gradle.org/distributions/gradle-8.10.2-bin.zip"
       dest: "/tmp/gradle.zip"
       mode: '0755'
     tags: install-ghidra
@@ -271,7 +271,7 @@
   - name: Ghidra - Download source
     ansible.builtin.get_url:
       #todo(dfelo): use var for version.
-      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.1.1_build.zip
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2_build.zip
       dest: /tmp/ghidra.zip
     tags: install-ghidra
 
@@ -283,10 +283,19 @@
     become_user: vagrant
     tags: install-ghidra
 
+  - name: Ghidra - fetch ghidra dependencies 
+    shell: |
+      cd /tmp/ghidra*/ && \
+      /opt/gradle/bin/gradle --init-script gradle/support/fetchDependencies.gradle init
+    args:
+      executable: /usr/bin/zsh
+    become_user: vagrant
+    ignore_errors: true
+    tags: install-ghidra
+
   - name: Ghidra - build ghidra
     shell: |
       cd /tmp/ghidra*/ && \
-      /opt/gradle/bin/gradle --init-script gradle/support/fetchDependencies.gradle init && \
       /opt/gradle/bin/gradle buildGhidra
     args:
       executable: /usr/bin/zsh
