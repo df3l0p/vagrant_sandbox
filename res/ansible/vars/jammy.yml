@@ -16,3 +16,5 @@ packages:
   - libimage-exiftool-perl
   - binwalk
   - mpack # used for unpacking eml files.
+  # network tools
+  - nmap
