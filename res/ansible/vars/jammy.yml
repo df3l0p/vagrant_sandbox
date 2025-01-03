@@ -6,7 +6,6 @@ packages:
   - zsh
   - vim-gtk
   - terminator
-  - vim-gtk
   - kmod
   - unzip
   - git

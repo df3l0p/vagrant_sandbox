@@ -45,9 +45,9 @@ Vagrant.configure("2") do |config|
     targets&.each do |name, target|
         config.vm.define name do |build|
             build.vm.provider "parallels" do |prl, override|
-                override.vm.box = target["parallels"]["box"]
-                if not target["parallels"]["version"].empty?
-                    override.vm.box_version = target["parallels"]["version"]
+                override.vm.box = target.fetch("parallels", {}).fetch("box")
+                if not target.fetch("parallels", {}).fetch("version", "").empty?
+                    override.vm.box_version = target.fetch("parallels", {}).fetch("version", "")
                 end
                 prl.name = name
 
@@ -70,9 +70,9 @@ Vagrant.configure("2") do |config|
             end
 
             build.vm.provider :virtualbox do |vb, override|
-                override.vm.box = target["virtualbox"]["box"]
-                if not target["virtualbox"]["version"].empty?
-                    override.vm.box_version = target["virtualbox"]["version"]
+                override.vm.box = target.fetch("virtualbox", {})["box"]
+                if not target.fetch("virtualbox", {}).fetch("version", "").empty?
+                    override.vm.box_version = target.fetch("virtualbox", {}).fetch("version", "")
                 end
                 vb.name = name
 
@@ -118,7 +118,7 @@ Vagrant.configure("2") do |config|
             end
 
             # Test if ip is provided
-            if not target["ip"].empty?
+            if not target.fetch("ip", "").empty?
                 build.vm.network "private_network", ip: target["ip"]
             end
 

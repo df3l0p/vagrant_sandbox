@@ -30,13 +30,15 @@
         "{{ unwanted }}"
       state: absent
       update_cache: yes
+      cache_valid_time: 86400
     tags:
       - remove-unwanted
 
   - name: Update all packages to the latest version
     apt:
-      state: latest
-      update_cache: no
+      upgrade: yes
+      update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-update
 
@@ -45,7 +47,8 @@
       pkg: 
         "{{ packages }}"
       state: latest
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-base-packages
 
@@ -56,7 +59,8 @@
       pkg:
         - docker.io
       state: latest
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-docker
 
@@ -157,7 +161,8 @@
         - python3
         - python3-pip
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-oletools
 
   - name: Olevba - Installation
@@ -171,7 +176,8 @@
       name:
         - poppler-utils
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-pdftools
 
   - name: Pdftools - Cloning pdf github tools
@@ -211,7 +217,8 @@
       name:
         - tesseract-ocr
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-tesseract
 
   - name: Tesseract - install language package
@@ -234,7 +241,8 @@
         - wget
         - unzip
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-ghidra
 
   - name: Ghidra - Set the PATH environment for JAVA
@@ -376,7 +384,8 @@
     ansible.builtin.apt:
       name: brave-browser
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-brave
 
   ## Yara
@@ -385,7 +394,8 @@
     ansible.builtin.apt:
       name: yara
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-yara
 
   - name: Yara - Check if yara_scan exists in .zshrc
@@ -416,7 +426,8 @@
         - clamav
         - clamav-daemon
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-clamav
 
   - name: ClamAV - Disable real time scanning
@@ -425,7 +436,8 @@
         - clamav
         - clamav-daemon
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-clamav
 
   - name: ClamAV - Ensure clamav-daemon is stopped and disabled
@@ -460,7 +472,8 @@
     apt:
       name: code
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-vscode
 
   ## Golang
@@ -552,7 +565,7 @@
 
   - name: ProtonVPN - Download deb
     ansible.builtin.get_url:
-      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb
+      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.6_all.deb
       dest: /tmp/package.deb
       checksum: sha256:de7ef83a663049b5244736d3eabaacec003eb294a4d6024a8fbe0394f22cc4e5
     tags:
