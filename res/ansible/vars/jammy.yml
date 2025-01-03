@@ -18,3 +18,14 @@ packages:
   - mpack # used for unpacking eml files.
   # network tools
   - nmap
+unwanted:
+  - apport
+  - apport-symptoms
+  - popularity-contest
+  - ubuntu-report
+  - whoopsie
+  # cloud
+  - cloud-init
+  - cloud-guest-utils
+  - cloud-initramfs-copymods
+  - cloud-initramfs-dyn-netconf

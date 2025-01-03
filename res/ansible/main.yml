@@ -24,10 +24,19 @@
     tags: 
       - set-vars
 
+  - name: Remove unwanted packages
+    ansible.builtin.apt:
+      pkg:
+        "{{ unwanted }}"
+      state: absent
+      update_cache: yes
+    tags:
+      - remove-unwanted
+
   - name: Update all packages to the latest version
     apt:
       state: latest
-      update_cache: yes
+      update_cache: no
     tags:
       - install-update
 
