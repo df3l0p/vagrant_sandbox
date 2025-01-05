@@ -29,7 +29,7 @@ Depending on the ansible provider, you can run playbooks manually for troublesho
 Connect to your instance with `vagrant ssh` and execute the following
 ```bash
 ansible -i localhost -m ping
-ansible-playbook -i localhost, -c local /vagrant/res/ansible/main.yml --tags some_tags
+ansible-playbook -i localhost, -c local /path/to/share/res/ansible/main.yml --tags some_tags
 # if use `vagrant ssh` and you get an error related to encoding issues, use:
 # export LC_ALL=C.UTF-8
 ```
@@ -38,7 +38,7 @@ ansible-playbook -i localhost, -c local /vagrant/res/ansible/main.yml --tags som
 
 You need ansible to be installed on the host to do that.
 ```bash
-python3 -m pip install ansible
+python3 -m pip install --break-system-packages ansible
 ```
 
 You can run the playbook with

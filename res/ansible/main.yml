@@ -24,10 +24,21 @@
     tags: 
       - set-vars
 
+  - name: Remove unwanted packages
+    ansible.builtin.apt:
+      pkg:
+        "{{ unwanted }}"
+      state: absent
+      update_cache: yes
+      cache_valid_time: 86400
+    tags:
+      - remove-unwanted
+
   - name: Update all packages to the latest version
     apt:
-      state: latest
+      upgrade: yes
       update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-update
 
@@ -36,7 +47,8 @@
       pkg: 
         "{{ packages }}"
       state: latest
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-base-packages
 
@@ -47,7 +59,8 @@
       pkg:
         - docker.io
       state: latest
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-docker
 
@@ -148,11 +161,17 @@
         - python3
         - python3-pip
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-oletools
 
   - name: Olevba - Installation
-    ansible.builtin.shell: python3 -m pip install --upgrade pip oletools
+    ansible.builtin.pip:
+      name:
+        - oletools
+      state: latest
+      break_system_packages: true
+    become_user: vagrant
     tags: install-oletools
 
   ## pdfid, pdf-parser (DidierStensSuite)
@@ -162,7 +181,8 @@
       name:
         - poppler-utils
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-pdftools
 
   - name: Pdftools - Cloning pdf github tools
@@ -202,13 +222,14 @@
       name:
         - tesseract-ocr
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-tesseract
 
   - name: Tesseract - install language package
     ansible.builtin.get_url:
       url: "https://github.com/tesseract-ocr/tessdata/raw/4.00/{{ item }}.traineddata"
-      dest: /usr/share/tesseract-ocr/4.00/tessdata/
+      dest: /usr/share/tesseract-ocr/5/tessdata/
     with_items:
       - fra
       - eng
@@ -225,7 +246,8 @@
         - wget
         - unzip
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-ghidra
 
   - name: Ghidra - Set the PATH environment for JAVA
@@ -271,7 +293,7 @@
   - name: Ghidra - Download source
     ansible.builtin.get_url:
       #todo(dfelo): use var for version.
-      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2_build.zip
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2.1_build.zip
       dest: /tmp/ghidra.zip
     tags: install-ghidra
 
@@ -367,7 +389,8 @@
     ansible.builtin.apt:
       name: brave-browser
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-brave
 
   ## Yara
@@ -376,7 +399,8 @@
     ansible.builtin.apt:
       name: yara
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-yara
 
   - name: Yara - Check if yara_scan exists in .zshrc
@@ -407,7 +431,8 @@
         - clamav
         - clamav-daemon
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-clamav
 
   - name: ClamAV - Disable real time scanning
@@ -416,7 +441,8 @@
         - clamav
         - clamav-daemon
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-clamav
 
   - name: ClamAV - Ensure clamav-daemon is stopped and disabled
@@ -451,14 +477,15 @@
     apt:
       name: code
       state: present
-      update_cache: no
+      update_cache: yes
+      cache_valid_time: 86400
     tags: install-vscode
 
   ## Golang
   #########################################
   - name: Golang - Downloading
     get_url:
-      url: "https://dl.google.com/go/go1.20.5.linux-{{ apt_arch }}.tar.gz"
+      url: "https://dl.google.com/go/go1.23.4.linux-{{ apt_arch }}.tar.gz"
       dest: /tmp/go.tar.gz
       mode: '0755'
     tags: install-golang
@@ -543,9 +570,9 @@
 
   - name: ProtonVPN - Download deb
     ansible.builtin.get_url:
-      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb
+      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.6_all.deb
       dest: /tmp/package.deb
-      checksum: sha256:de7ef83a663049b5244736d3eabaacec003eb294a4d6024a8fbe0394f22cc4e5
+      checksum: sha256:e5e03976d0980bafdf07da2f71b14fbc883c091e72b16772199742c98473002f
     tags:
       - install-protonvpn
 
@@ -568,11 +595,20 @@
         - pyopenssl
         - cryptography
       state: latest
+      break_system_packages: true
+    become_user: vagrant
     tags:
       - install-protonvpn
 
   - name:
     ansible.builtin.debug:
-      msg: Make sure to REBOOT for protonVPN to work
+      msg: |
+        Reboot for protonvpn to work!
+        For an unknown reason, protonvpn-cli login doesn't work without a proxy.
+        Run the following to login:
+          openssl x509 -inform der -in ~/Desktop/burp.cer -outform PEM -out ~/Desktop/burp.pem
+          sudo cp ~/Desktop/burp.pem /usr/local/share/ca-certificates/burp.pem
+          export http_proxy=http://localhost:8080 && export https_proxy=http://localhost:8080 && export REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/burp.pem
+          protonvpn-cli login <username>
     tags:
       - install-protonvpn

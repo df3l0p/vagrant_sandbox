@@ -1,10 +1,9 @@
 packages:
   # GUI
   - ubuntu-desktop # this is for gnome4
-  - cinnamon # this is for gnome4
   # base tools
   - zsh
-  - vim-gtk
+  - vim-gtk3
   - terminator
   - kmod
   - unzip
@@ -28,3 +27,5 @@ unwanted:
   - cloud-guest-utils
   - cloud-initramfs-copymods
   - cloud-initramfs-dyn-netconf
+  # misc
+  - qrtr-tools
