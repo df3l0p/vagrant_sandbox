@@ -1,0 +1,31 @@
+packages:
+  # GUI
+  - ubuntu-desktop # this is for gnome4
+  # base tools
+  - zsh
+  - vim-gtk3
+  - terminator
+  - kmod
+  - unzip
+  - git
+  - firefox
+  - chromium-browser
+  # basic forensic tools
+  - libimage-exiftool-perl
+  - binwalk
+  - mpack # used for unpacking eml files.
+  # network tools
+  - nmap
+unwanted:
+  - apport
+  - apport-symptoms
+  - popularity-contest
+  - ubuntu-report
+  - whoopsie
+  # cloud
+  - cloud-init
+  - cloud-guest-utils
+  - cloud-initramfs-copymods
+  - cloud-initramfs-dyn-netconf
+  # misc
+  - qrtr-tools

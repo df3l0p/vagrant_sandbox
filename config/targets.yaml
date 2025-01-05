@@ -1,5 +1,5 @@
 targets:
-  sandbox-02:
+  sandbox-01:
     virtualbox:
       box: ubuntu/jammy64
       version: 20230510.0.0

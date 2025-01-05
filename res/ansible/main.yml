@@ -166,7 +166,12 @@
     tags: install-oletools
 
   - name: Olevba - Installation
-    ansible.builtin.shell: python3 -m pip install --upgrade pip oletools
+    ansible.builtin.pip:
+      name:
+        - oletools
+      state: latest
+      break_system_packages: true
+    become_user: vagrant
     tags: install-oletools
 
   ## pdfid, pdf-parser (DidierStensSuite)
@@ -224,7 +229,7 @@
   - name: Tesseract - install language package
     ansible.builtin.get_url:
       url: "https://github.com/tesseract-ocr/tessdata/raw/4.00/{{ item }}.traineddata"
-      dest: /usr/share/tesseract-ocr/4.00/tessdata/
+      dest: /usr/share/tesseract-ocr/5/tessdata/
     with_items:
       - fra
       - eng
@@ -288,7 +293,7 @@
   - name: Ghidra - Download source
     ansible.builtin.get_url:
       #todo(dfelo): use var for version.
-      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2_build.zip
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2.1_build.zip
       dest: /tmp/ghidra.zip
     tags: install-ghidra
 
@@ -480,7 +485,7 @@
   #########################################
   - name: Golang - Downloading
     get_url:
-      url: "https://dl.google.com/go/go1.20.5.linux-{{ apt_arch }}.tar.gz"
+      url: "https://dl.google.com/go/go1.23.4.linux-{{ apt_arch }}.tar.gz"
       dest: /tmp/go.tar.gz
       mode: '0755'
     tags: install-golang
@@ -567,7 +572,7 @@
     ansible.builtin.get_url:
       url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.6_all.deb
       dest: /tmp/package.deb
-      checksum: sha256:de7ef83a663049b5244736d3eabaacec003eb294a4d6024a8fbe0394f22cc4e5
+      checksum: sha256:e5e03976d0980bafdf07da2f71b14fbc883c091e72b16772199742c98473002f
     tags:
       - install-protonvpn
 
@@ -590,11 +595,20 @@
         - pyopenssl
         - cryptography
       state: latest
+      break_system_packages: true
+    become_user: vagrant
     tags:
       - install-protonvpn
 
   - name:
     ansible.builtin.debug:
-      msg: Make sure to REBOOT for protonVPN to work
+      msg: |
+        Reboot for protonvpn to work!
+        For an unknown reason, protonvpn-cli login doesn't work without a proxy.
+        Run the following to login:
+          openssl x509 -inform der -in ~/Desktop/burp.cer -outform PEM -out ~/Desktop/burp.pem
+          sudo cp ~/Desktop/burp.pem /usr/local/share/ca-certificates/burp.pem
+          export http_proxy=http://localhost:8080 && export https_proxy=http://localhost:8080 && export REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/burp.pem
+          protonvpn-cli login <username>
     tags:
       - install-protonvpn

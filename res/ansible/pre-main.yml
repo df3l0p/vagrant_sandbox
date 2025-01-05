@@ -1,0 +1,22 @@
+- hosts: all
+  gather_facts: yes
+  become: yes
+  handlers:
+    - name: Update GRUB configuration
+      ansible.builtin.command: update-grub
+  tasks:
+    - name: Copy files to /etc/grub.d/
+      copy:
+        src: "{{ item }}"  # Path to the source file on the control node
+        dest: "/etc/default/grub.d/"  # Path to the destination on the target node
+        owner: root
+        group: root
+        mode: 0755
+      with_fileglob:
+        - "files/grub.d/*.cfg"
+      notify:
+        - Update GRUB configuration
+    - name:
+      ansible.builtin.debug:
+        msg: |
+          "Please reboot the system to apply the changes."
