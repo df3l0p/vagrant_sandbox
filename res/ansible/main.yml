@@ -621,26 +621,24 @@
       enabled: false
       state: stopped
     tags:
-      - fix-systemd-networkd-wait-online
+      - fix-systemd-networkd
 
-  ## pipx
+  ## Install uv
   #########################################
-  - name: Install pipx
-    ansible.builtin.apt:
-      name:
-        - pipx
-      state: present
-      update_cache: yes
-      cache_valid_time: 86400
+  - name: uv - Installing
+    ansible.builtin.shell: |
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+    args:
+      executable: /bin/bash
+    become_user: "vagrant"
     tags:
-      - install-pipx
+      - install-uv
 
-  - name: Set PATH for pipx
+  - name: uv - Set the PATH environment variable
     lineinfile:
       path: "/home/vagrant/.zshrc"
       line: "export {{ item.key }}={{ item.value }}"
     with_items:
       - { key: "PATH", value: "$PATH:$HOME/.local/bin" }
-    become_user: "vagrant"
-    tags:
-      - install-pipx
+    become_user: vagrant
+    tags: install-uv
