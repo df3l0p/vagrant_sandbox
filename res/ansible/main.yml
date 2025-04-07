@@ -293,7 +293,7 @@
   - name: Ghidra - Download source
     ansible.builtin.get_url:
       #todo(dfelo): use var for version.
-      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.2.1_build.zip
+      url: https://github.com/NationalSecurityAgency/ghidra/archive/refs/tags/Ghidra_11.3.1_build.zip
       dest: /tmp/ghidra.zip
     tags: install-ghidra
 
@@ -612,3 +612,35 @@
           protonvpn-cli login <username>
     tags:
       - install-protonvpn
+
+  ## Fix systemd-networkd-wait-online
+  #########################################
+  - name:
+    ansible.builtin.service:
+      name: systemd-networkd-wait-online
+      enabled: false
+      state: stopped
+    tags:
+      - fix-systemd-networkd-wait-online
+
+  ## pipx
+  #########################################
+  - name: Install pipx
+    ansible.builtin.apt:
+      name:
+        - pipx
+      state: present
+      update_cache: yes
+      cache_valid_time: 86400
+    tags:
+      - install-pipx
+
+  - name: Set PATH for pipx
+    lineinfile:
+      path: "/home/vagrant/.zshrc"
+      line: "export {{ item.key }}={{ item.value }}"
+    with_items:
+      - { key: "PATH", value: "$PATH:$HOME/.local/bin" }
+    become_user: "vagrant"
+    tags:
+      - install-pipx
