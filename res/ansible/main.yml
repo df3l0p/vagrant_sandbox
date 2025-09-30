@@ -579,15 +579,21 @@
       - install-protonvpn
 
   # we need to install the key manually as it's not done with the .deb
-  - name: ProtonVPN - Download and add GPG key
-    ansible.builtin.shell: |
-      curl -fsSL https://repo.protonvpn.com/debian/public_key.asc \
-        | gpg --dearmor | tee /etc/apt/keyrings/protonvpn.gpg >/dev/null
-    args:
-      creates: /etc/apt/keyrings/protonvpn.gpg
+  - name: ProtonVPN - Download GPG key
+    ansible.builtin.get_url:
+      url: https://repo.protonvpn.com/debian/public_key.asc
+      dest: /etc/apt/keyrings/protonvpn.asc
+      mode: '0644'
     tags:
       - install-protonvpn
 
+  - name: ProtonVPN - Add GPG key to keyring
+    ansible.builtin.apt_key:
+      file: /etc/apt/keyrings/protonvpn.asc
+      keyring: /etc/apt/keyrings/protonvpn.gpg
+      state: present
+    tags:
+      - install-protonvpn
   - name: ProtonVPN - Add APT repository
     ansible.builtin.apt_repository:
       repo: "deb [signed-by=/etc/apt/keyrings/protonvpn.gpg] https://repo.protonvpn.com/debian stable main"
