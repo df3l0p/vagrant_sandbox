@@ -541,6 +541,7 @@
   - name: Rename .yaml to .yaml.bak
     command: mv {{ item.path }} {{ item.path }}.bak
     with_items: "{{ yaml_files.files }}"
+    when: item.path | basename not in ['01-netcfg.yaml']
     tags:
       - install-protonvpn
 
@@ -565,26 +566,41 @@
         - python3-pip
       state: present
       update_cache: yes
+      cache_valid_time: 86400
     tags:
       - install-protonvpn
 
-  - name: ProtonVPN - Download deb
-    ansible.builtin.get_url:
-      url: https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.6_all.deb
-      dest: /tmp/package.deb
-      checksum: sha256:e5e03976d0980bafdf07da2f71b14fbc883c091e72b16772199742c98473002f
+  - name: ProtonVPN - Create keyrings directory
+    ansible.builtin.file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
     tags:
       - install-protonvpn
 
-  - name: ProtonVPN - Install deb
-    ansible.builtin.apt:
-      deb: /tmp/package.deb
+  # we need to install the key manually as it's not done with the .deb
+  - name: ProtonVPN - Download and add GPG key
+    ansible.builtin.shell: |
+      curl -fsSL https://repo.protonvpn.com/debian/public_key.asc \
+        | gpg --dearmor | tee /etc/apt/keyrings/protonvpn.gpg >/dev/null
+    args:
+      creates: /etc/apt/keyrings/protonvpn.gpg
+    tags:
+      - install-protonvpn
+
+  - name: ProtonVPN - Add APT repository
+    ansible.builtin.apt_repository:
+      repo: "deb [signed-by=/etc/apt/keyrings/protonvpn.gpg] https://repo.protonvpn.com/debian stable main"
+      filename: protonvpn-stable
+      update_cache: yes
     tags:
       - install-protonvpn
 
   - name: ProtonVPN - Install package
     ansible.builtin.apt:
-      name: protonvpn-cli
+      name:
+        - protonvpn-cli
+      state: present
       update_cache: yes
     tags:
       - install-protonvpn
