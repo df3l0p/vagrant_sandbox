@@ -1,6 +1,7 @@
 packages:
   # GUI
   - ubuntu-desktop # this is for gnome4
+  - lightdm
   # base tools
   - zsh
   - vim-gtk3
