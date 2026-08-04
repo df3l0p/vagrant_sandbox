@@ -614,17 +614,6 @@
     tags:
       - install-protonvpn
 
-  - name: ProtonVPN - Upgrade required pip packages
-    ansible.builtin.pip:
-      name:
-        - pyopenssl
-        - cryptography
-      state: latest
-      break_system_packages: true
-    become_user: vagrant
-    tags:
-      - install-protonvpn
-
   - name: ProtonVPN - Usage instructions
     ansible.builtin.debug:
       msg: |
